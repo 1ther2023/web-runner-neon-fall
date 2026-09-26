@@ -53,7 +53,7 @@ const EB = {
 // 0-2分: 热身 | 2-6分: 三位BOSS逐步压上 | 6分后: 黑潮暴走，指数增长，目标一局 6-8 分钟
 const Diff = {
   T() { return G.runTime || 0; },
-  over() { const t = this.T(); return t > 360 ? Math.pow(1.6, (t - 360) / 25) : 1; },
+  over() { const t = this.T(); return t > 360 ? Math.pow(1.7, (t - 360) / 21) : 1; },
   hp() { return (1 + this.T() / 38 + Math.pow(this.T() / 120, 2)) * this.over(); },
   edmg() { return .8 * (1 + this.T() / 300) * Math.pow(this.over(), .85); },
   spd() { return 1 + Math.min(.45, this.T() / 700) + Math.min(.45, (this.over() - 1) * .12); },
