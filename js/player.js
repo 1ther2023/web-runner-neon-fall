@@ -98,7 +98,7 @@ const Player = {
     if (this.x < left) {
       this.x = left; this.vx = Math.max(this.vx, G.camSpeed + 60);
       this.edgeT -= dt;
-      if (this.edgeT <= 0) { this.edgeT = .35; this.hurt(6 + Diff.over() * 4, true); FX.spark(this.x, this.y, 8, '#b070ff', 120, .3); }
+      if (this.edgeT <= 0) { this.edgeT = .35; this.hurt(3 + Diff.over() * 2, true); FX.spark(this.x, this.y, 8, '#b070ff', 120, .3); }
     }
     if (this.y > H + 14) { this.die('坠落阵亡', '双手都放开了蛛丝……黑潮吞没了你'); return; }
     // 姿态
@@ -116,7 +116,7 @@ const Player = {
     if (!this.alive || this.inv > 0 || G.ultT > 0) return false;
     if (Stats.dodge && Math.random() < Stats.dodge) { FX.text(this.x, this.y - 14, 'DODGE', '#8af0ff'); this.inv = .3; return false; }
     dmg = Math.max(1, Math.round(dmg * Diff.edmg() * (1 - Stats.armor)));
-    this.hp -= dmg; this.inv = silentEdge ? .2 : .9;
+    this.hp -= dmg; this.inv = silentEdge ? .3 : 1.1;
     addShake(silentEdge ? 3 : 7); screenFlash(.35, '#ff2030'); if (!silentEdge) hitStop(.06);
     Sfx.play('hurt'); FX.spark(this.x, this.y, 12, '#ff3040', 150, .35);
     FX.text(this.x, this.y - 14, '-' + dmg, '#ff4050', 1);
@@ -212,6 +212,19 @@ const Shots = {
           damageEnemy(e, s.dmg, crit, s.vx, s.vy);
           FX.spark(s.x, s.y, crit ? 6 : 3, crit ? '#ffe04a' : '#fff', 120, .15);
           if (s.pierce-- <= 0) dead = true;
+        }
+      }
+      // 与敌方弹幕抵消：每枚弹药可抵消若干子弹，耗尽后消失
+      if (!dead) {
+        if (s.cancel === undefined) s.cancel = 2 + s.pierce;
+        for (let j = EB.list.length - 1; j >= 0; j--) {
+          const b = EB.list[j]; if (b.delay > 0) continue;
+          const rr = s.r + b.r + 3;
+          if (d2(s.x, s.y, b.x, b.y) < rr * rr) {
+            EB.list.splice(j, 1); FX.spark(b.x, b.y, 4, b.col, 90, .2); FX.spark(b.x, b.y, 2, '#fff', 60, .15);
+            Sfx.play('graze'); addStorm(.3);
+            if (--s.cancel <= 0) { dead = true; break; }
+          }
         }
       }
       if (dead) this.list.splice(i, 1);

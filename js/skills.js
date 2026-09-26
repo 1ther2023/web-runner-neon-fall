@@ -51,6 +51,18 @@ const SKILLS = [
     update(s, lv, dt) {
       const P = Player, S = this.st(lv); s.t -= dt;
       if (s.t > 0) return;
+      // 拦截：附近有来袭子弹时，交替优先射击子弹
+      s.alt = !s.alt;
+      if (s.alt) {
+        let tb = null, bd = 85 * 85;
+        for (const b of EB.list) { if (b.delay > 0) continue; const dd = d2(P.x, P.y, b.x, b.y); if (dd < bd && (P.x - b.x) * b.vx + (P.y - b.y) * b.vy > 0) { bd = dd; tb = b; } }
+        if (tb) {
+          s.t = cd(1 / S.rate) / (G.ultT > 0 ? 2 : 1);
+          const tt = Math.sqrt(bd) / 380, a = angTo(P.x, P.y - 4, tb.x + tb.vx * tt, tb.y + tb.vy * tt);
+          for (let i = 0; i < S.n; i++) Shots.fire(P.x, P.y - 4, a + (i - (S.n - 1) / 2) * .12, S.dmg, { pierce: S.pierce });
+          Sfx.play('shoot'); return;
+        }
+      }
       const t = findTarget(P.x, P.y, 300); if (!t) { s.t = .05; return; }
       s.t = cd(1 / S.rate) / (G.ultT > 0 ? 2 : 1);
       const lead = Math.hypot(t.x - P.x, t.y - P.y) / 380, a = angTo(P.x, P.y - 4, t.x + (t.vx || 0) * lead, t.y + (t.vy || 0) * lead);
@@ -150,6 +162,7 @@ const SKILLS = [
       const a = angTo(P.x, P.y, t.x, t.y), dx = Math.cos(a), dy = Math.sin(a);
       PBeams.push({ x: P.x, y: P.y, a, w: S.w, life: .3 });
       for (const e of allTargets()) { const px = e.x - P.x, py = e.y - P.y, pr = px * dx + py * dy; if (pr > 0 && Math.abs(px * dy - py * dx) < S.w / 2 + (e.r || 18)) damageEnemy(e, S.dmg, rollCrit()); }
+      for (let j = EB.list.length - 1; j >= 0; j--) { const b = EB.list[j], px = b.x - P.x, py = b.y - P.y; if (px * dx + py * dy > 0 && Math.abs(px * dy - py * dx) < S.w / 2 + b.r + 3) { FX.spark(b.x, b.y, 3, b.col, 70, .2); EB.list.splice(j, 1); } }
       Sfx.play('laser'); addShake(3);
     } },
   { id: 'nova', ico: '✴️', nm: '蛛网新星', ds: '向四面八方爆发一圈蛛网弹幕',

@@ -53,9 +53,9 @@ const EB = {
 // 0-2分: 热身 | 2-6分: 三位BOSS逐步压上 | 6分后: 黑潮暴走，指数增长，目标一局 6-8 分钟
 const Diff = {
   T() { return G.runTime || 0; },
-  over() { const t = this.T(); return t > 360 ? Math.pow(1.5, (t - 360) / 30) : 1; },
+  over() { const t = this.T(); return t > 360 ? Math.pow(1.6, (t - 360) / 25) : 1; },
   hp() { return (1 + this.T() / 38 + Math.pow(this.T() / 120, 2)) * this.over(); },
-  edmg() { return (1 + this.T() / 240) * Math.sqrt(this.over()); },
+  edmg() { return .8 * (1 + this.T() / 300) * Math.pow(this.over(), .85); },
   spd() { return 1 + Math.min(.45, this.T() / 700) + Math.min(.45, (this.over() - 1) * .12); },
   interval() { return clamp(2.4 - this.T() / 170, .7, 2.4) / Math.sqrt(this.over()); },
   phase() { const t = this.T(); return t > 360 ? 3 : t > 240 ? 2 : t > 120 ? 1 : 0; },
@@ -73,7 +73,7 @@ function ringShot(x, y, n, spd, col, r, off, dmg, o) {
 const EDEF = {
   drone: { hp: 5, r: 6, coin: 1, en: 3, spd: 110, cd: [1.5, 2.4], fire(e) { aimed(e.x, e.y, 1, 0, 105, '#ff4a6a', 3, 9); } },
   thug: { hp: 13, r: 7, coin: 2, en: 4, spd: 80, cd: [1.9, 2.7], fire(e) { aimed(e.x - 4, e.y, 3, .22, 115, '#ffb03a', 3, 10); } },
-  blob: { hp: 4, r: 5, coin: 1, en: 5, spd: 120, cd: [99, 99], kamikaze: true },
+  blob: { hp: 4, r: 5, coin: 1, en: 5, spd: 95, cd: [99, 99], kamikaze: true },
   eye: { hp: 32, r: 8, coin: 4, en: 8, spd: 60, cd: [2.4, 3.2], fire(e) { e.burst = 14; e.burstT = 0; } },
   gunship: { hp: 80, r: 12, coin: 9, en: 14, spd: 45, cd: [2.6, 3.4], fire(e) { ringShot(e.x, e.y, 18, 70, '#b070ff', 4, e.t, 12); aimed(e.x, e.y + 4, 5, .12, 140, '#ff4a6a', 2, 9); } },
 };
@@ -127,7 +127,7 @@ const Enemies = {
       e.t += dt; e.flash -= dt; e.life -= dt; e.x += G.camDX;
       const d = e.d;
       if (d.kamikaze) {
-        const a = angTo(e.x, e.y, P.x, P.y), sp = d.spd + e.t * 25;
+        const a = angTo(e.x, e.y, P.x, P.y), sp = d.spd + e.t * 15;
         e.vx = lerp(e.vx, Math.cos(a) * sp, 3 * dt); e.vy = lerp(e.vy, Math.sin(a) * sp, 3 * dt);
       } else {
         if (e.life < 0) e.tx = -80;
@@ -146,7 +146,7 @@ const Enemies = {
       e.x += e.vx * dt; e.y += e.vy * dt;
       if (e.x < G.cam.x - 60 || e.y > H + 40) { this.list.splice(i, 1); continue; }
       if (P.alive && d2(e.x, e.y, P.x, P.y) < (e.r + 4) * (e.r + 4)) {
-        if (P.hurt(d.kamikaze ? 14 : 10) && d.kamikaze) killEnemy(e, true);
+        if (P.hurt(d.kamikaze ? 8 : 6) && d.kamikaze) killEnemy(e, true);
       }
     }
   },
