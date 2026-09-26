@@ -25,7 +25,7 @@ const EB = {
       if (dd < hr * hr) {
         if (P.hurt(b.dmg)) { this.list.splice(i, 1); continue; }
       } else if (!b.grazed && dd < (b.r + Stats.grazeR) * (b.r + Stats.grazeR)) {
-        b.grazed = true; G.grazes++; addStorm(1.2);
+        b.grazed = true; G.grazes++; addStorm(1.2); if (Stats.grazeHeal) P.hp = Math.min(P.maxHp, P.hp + Stats.grazeHeal);
         Sfx.play('graze'); FX.spark(P.x, P.y, 2, '#8af0ff', 90, .2);
         if (G.grazes % 10 === 0) FX.text(P.x, P.y - 18, 'GRAZE x' + G.grazes, '#8af0ff');
       }
@@ -191,6 +191,8 @@ function hitTest(x, y, r, exclude) {
 function damageEnemy(e, dmg, crit, kvx, kvy) {
   if (e.dead || !e.alive && e.isBoss) return;
   dmg *= Stats.dmgMul * (crit ? Stats.critMul : 1);
+  if (Stats.lowHpDmg && Player.hp < Player.maxHp * .5) dmg *= 1 + Stats.lowHpDmg;
+  if (Stats.bossDmg && (e.isBoss || e.elite)) dmg *= 1 + Stats.bossDmg;
   if (G.ultT > 0) dmg *= 1.5;
   dmg = Math.max(1, Math.round(dmg));
   e.hp -= dmg; e.flash = .07;
@@ -201,6 +203,7 @@ function damageEnemy(e, dmg, crit, kvx, kvy) {
   G.combo++; G.comboT = 2.2; G.maxCombo = Math.max(G.maxCombo, G.combo);
   if (e.isBoss) e.onHit(dmg);
   else if (e.hp <= 0) killEnemy(e);
+  else if (Stats.execute && !e.elite && e.hp < e.maxHp * Stats.execute) { FX.text(e.x, e.y - 12, 'EXECUTE', '#ff3040'); killEnemy(e); }
 }
 function killEnemy(e, noReward) {
   if (e.dead) return; e.dead = true;
@@ -208,7 +211,7 @@ function killEnemy(e, noReward) {
   FX.boom(e.x, e.y, big ? 1.4 : .8, e.type === 'blob' ? ['#fff', '#b070ff', '#3b2358', '#1a0f26'] : undefined);
   addShake(big ? 5 : 2.5); if (big) { hitStop(.05); Sfx.play('bigkill'); } else Sfx.play('kill');
   if (noReward) return;
-  G.kills++; addStorm(big ? 3 : 1.2);
+  G.kills++; addStorm(big ? 3 : 1.2); if (Stats.killHeal) Player.heal(Stats.killHeal);
   const T = Diff.T();
   const cv = Math.ceil(d.coin * (1 + T / 260) * (e.elite ? 8 : 1));
   Pickups.spawn(e.x, e.y, 'coin', 1, Math.min(cv, 12));

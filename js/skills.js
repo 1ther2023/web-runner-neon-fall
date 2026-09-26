@@ -11,12 +11,60 @@ const EQUIPS = [
   { id: 'core', ico: '🔋', nm: '风暴核心', ds: lv => '风暴充能 +' + [25, 50, 80, 120][lv - 1] + '%，擦弹范围扩大' },
 ];
 const EQ_MAX = 4, EQ_SLOTS = 6, SK_MAX = 10, SK_SLOTS = 5;
+
+// ============ 装备升级路线：Lv1→2 时三选一锁定，Lv3/Lv4 沿路线深化 ============
+const pct = v => Math.round(v * 100) + '%';
+const EQ_ROUTES = {
+  suit: [
+    { nm: '重装', ds: k => '最大生命额外 +' + [30, 60, 100][k - 1] + (k >= 3 ? '；受伤后无敌 +0.5 秒' : ''), ap: (S, k) => { S.hpAdd += [30, 60, 100][k - 1]; if (k >= 3) S.invBonus += .5; } },
+    { nm: '再生', ds: k => '每秒额外回复 ' + [.5, 1, 1.6][k - 1] + ' 生命' + (k >= 3 ? '；击杀回复 1 生命' : ''), ap: (S, k) => { S.regen += [.5, 1, 1.6][k - 1]; if (k >= 3) S.killHeal += 1; } },
+    { nm: '反应装甲', ds: k => '受击时爆发冲击，造成 ' + [20, 40, 70][k - 1] + ' 伤害并清除周围子弹', ap: (S, k) => { S.thorns += [20, 40, 70][k - 1]; } },
+  ],
+  armor: [
+    { nm: '坚壁', ds: k => '受到伤害额外 -' + pct([.06, .12, .18][k - 1]), ap: (S, k) => { S.armor += [.06, .12, .18][k - 1]; } },
+    { nm: '能量护盾', ds: k => '每 ' + [14, 11, 8][k - 1] + ' 秒生成护盾，完全抵挡一次伤害', ap: (S, k) => { S.shieldCD = [14, 11, 8][k - 1]; } },
+    { nm: '闪避', ds: k => '闪避率 +' + pct([.06, .12, .2][k - 1]), ap: (S, k) => { S.dodge += [.06, .12, .2][k - 1]; } },
+  ],
+  helmet: [
+    { nm: '致命', ds: k => '暴击伤害额外 +' + pct([.3, .6, 1][k - 1]), ap: (S, k) => { S.critMul += [.3, .6, 1][k - 1]; } },
+    { nm: '精准', ds: k => '暴击率额外 +' + pct([.06, .12, .2][k - 1]), ap: (S, k) => { S.crit += [.06, .12, .2][k - 1]; } },
+    { nm: '危险感知', ds: k => '擦弹范围 +' + [3, 6, 10][k - 1] + '，每次擦弹回复 ' + [.3, .6, 1][k - 1] + ' 生命', ap: (S, k) => { S.grazeR += [3, 6, 10][k - 1]; S.grazeHeal += [.3, .6, 1][k - 1]; } },
+  ],
+  glove: [
+    { nm: '贪婪', ds: k => '金币获取 +' + pct([.2, .4, .7][k - 1]), ap: (S, k) => { S.coinMul += [.2, .4, .7][k - 1]; } },
+    { nm: '学识', ds: k => '经验获取额外 +' + pct([.15, .3, .5][k - 1]), ap: (S, k) => { S.xpMul += [.15, .3, .5][k - 1]; } },
+    { nm: '蛛丝强化', ds: k => '蛛丝射程 +' + pct([.1, .2, .35][k - 1]) + '，收丝速度提升', ap: (S, k) => { S.range *= 1 + [.1, .2, .35][k - 1]; S.reel += [8, 16, 28][k - 1]; } },
+  ],
+  charm: [
+    { nm: '吸血', ds: k => '每次击杀回复 ' + [1, 2, 3][k - 1] + ' 生命', ap: (S, k) => { S.killHeal += [1, 2, 3][k - 1]; } },
+    { nm: '狂怒', ds: k => '生命低于 50% 时伤害 +' + pct([.2, .4, .7][k - 1]), ap: (S, k) => { S.lowHpDmg += [.2, .4, .7][k - 1]; } },
+    { nm: '涅槃', ds: k => '战斗阵亡时复活一次，恢复 ' + pct([.3, .5, .8][k - 1]) + ' 生命', ap: (S, k) => { S.revive = [.3, .5, .8][k - 1]; } },
+  ],
+  shooter: [
+    { nm: '超频', ds: k => '技能冷却额外 -' + pct([.06, .12, .2][k - 1]), ap: (S, k) => { S.cdMul -= [.06, .12, .2][k - 1]; } },
+    { nm: '穿甲', ds: k => '弹药穿透 +' + [1, 1, 2][k - 1] + '，抵消敌弹 +' + k, ap: (S, k) => { S.pierceBonus += [1, 1, 2][k - 1]; S.cancelBonus += k; } },
+    { nm: '连发', ds: k => '弹速 +' + pct([.15, .3, .5][k - 1]) + (k >= 3 ? '；蛛网弹 +1 发' : ''), ap: (S, k) => { S.shotSpd += [.15, .3, .5][k - 1]; if (k >= 3) S.extraShot += 1; } },
+  ],
+  band: [
+    { nm: '屠戮', ds: k => '所有伤害额外 +' + pct([.12, .25, .4][k - 1]), ap: (S, k) => { S.dmgMul += [.12, .25, .4][k - 1]; } },
+    { nm: '猎首', ds: k => '对 BOSS 与精英伤害 +' + pct([.2, .4, .7][k - 1]), ap: (S, k) => { S.bossDmg += [.2, .4, .7][k - 1]; } },
+    { nm: '处决', ds: k => '普通敌人生命低于 ' + pct([.15, .25, .4][k - 1]) + ' 时直接处决', ap: (S, k) => { S.execute = [.15, .25, .4][k - 1]; } },
+  ],
+  core: [
+    { nm: '充能', ds: k => '风暴充能额外 +' + pct([.3, .6, 1][k - 1]), ap: (S, k) => { S.stormMul += [.3, .6, 1][k - 1]; } },
+    { nm: '延时', ds: k => '万丝风暴持续 +' + [1, 2, 3.5][k - 1] + ' 秒', ap: (S, k) => { S.ultDur += [1, 2, 3.5][k - 1]; } },
+    { nm: '余震', ds: k => '万丝风暴伤害 +' + pct([.4, .8, 1.5][k - 1]), ap: (S, k) => { S.ultDmg += [.4, .8, 1.5][k - 1]; } },
+  ],
+};
+const ROUTE_TAG = ['A', 'B', 'C'];
+
 const Equip = {
   owned: [], ups: 0,
   reset() { this.owned = []; this.ups = 0; },
   lv(id) { const e = this.owned.find(o => o.id === id); return e ? e.lv : 0; },
-  add(id) { this.owned.push({ id, lv: 1 }); recalcStats(); },
-  up(id) { const e = this.owned.find(o => o.id === id); if (e && e.lv < EQ_MAX) { e.lv++; recalcStats(); } },
+  get(id) { return this.owned.find(o => o.id === id); },
+  add(id) { this.owned.push({ id, lv: 1, route: -1 }); recalcStats(); },
+  up(id, route) { const e = this.get(id); if (e && e.lv < EQ_MAX) { if (e.route < 0) e.route = route; e.lv++; recalcStats(); } },
   upgradable() { return this.owned.filter(o => o.lv < EQ_MAX); },
   cost() { const u = this.ups; return 30 + u * 30 + u * u * 8; },
 };
@@ -37,8 +85,12 @@ function recalcStats() {
     stormMul: 1 + t([.25, .5, .8, 1.2], 'core'),
     grazeR: 13 + t([2, 4, 6, 9], 'core'),
     range: 190, reel: 20, dodge: 0,
+    hpAdd: 0, invBonus: 0, killHeal: 0, thorns: 0, shieldCD: 0, grazeHeal: 0, coinMul: 1, lowHpDmg: 0, revive: 0,
+    pierceBonus: 0, cancelBonus: 0, shotSpd: 1, extraShot: 0, bossDmg: 0, execute: 0, ultDur: 0, ultDmg: 0,
   });
-  const newMax = 100 + t([20, 40, 65, 100], 'suit');
+  for (const o of Equip.owned) if (o.route >= 0 && o.lv > 1) EQ_ROUTES[o.id][o.route].ap(Stats, o.lv - 1);
+  Stats.cdMul = Math.max(.35, Stats.cdMul);
+  const newMax = 100 + t([20, 40, 65, 100], 'suit') + Stats.hpAdd;
   if (Player.maxHp !== undefined && newMax > oldMax) Player.hp += newMax - oldMax;
   Player.maxHp = newMax;
 }
@@ -47,7 +99,7 @@ function recalcStats() {
 const cd = base => base * Stats.cdMul;
 const SKILLS = [
   { id: 'web', ico: '🕸️', nm: '蛛网弹', ds: '自动向最近敌人发射蛛网弹，高等级多发并穿透',
-    st: lv => ({ rate: 2.6 + lv * .28, n: 1 + Math.floor(lv / 3), dmg: 4 + lv * 1.3, pierce: lv >= 10 ? 2 : lv >= 5 ? 1 : 0 }),
+    st: lv => ({ rate: 2.6 + lv * .28, n: 1 + Math.floor(lv / 3) + Stats.extraShot, dmg: 4 + lv * 1.3, pierce: lv >= 10 ? 2 : lv >= 5 ? 1 : 0 }),
     update(s, lv, dt) {
       const P = Player, S = this.st(lv); s.t -= dt;
       if (s.t > 0) return;
@@ -241,6 +293,7 @@ function addXP(v) {
   while (G.xp >= xpNeed(G.level)) { G.xp -= xpNeed(G.level); G.level++; G.queue.push('lvl'); }
 }
 function addCoins(v) { G.coins += v; G.totalCoins += v; }
+function gainCoin(v) { v *= Stats.coinMul; const n = Math.floor(v) + (Math.random() < v % 1 ? 1 : 0); addCoins(n); }
 function addStorm(v) {
   if (G.ultT > 0) return;
   const was = G.energy; G.energy = Math.min(100, G.energy + v * Stats.stormMul);
@@ -248,13 +301,13 @@ function addStorm(v) {
 }
 function ultimate() {
   if (G.energy < 100 || !Player.alive) return;
-  G.energy = 0; G.ultT = 3.2; const P = Player;
+  G.energy = 0; G.ultT = 3.2 + Stats.ultDur; const P = Player;
   Sfx.play('ult'); slowMo(.35, .7); addShake(12); screenFlash(.9, '#ff2030'); hitStop(.08);
   UI.banner('万丝风暴！', 'SPIDER STORM', 1.2);
   EB.clear(true); Lasers.reset();
   for (let i = 0; i < 3; i++) FX.ring(P.x, P.y, 4, 120 + i * 80, .5 + i * .2, i % 2 ? '#ff3040' : '#fff', 2);
   for (let i = 0; i < 24; i++) { const a = i / 24 * TAU; FX.bolt(P.x, P.y, P.x + Math.cos(a) * 160, P.y + Math.sin(a) * 160, i % 2 ? '#ffffff' : '#ff5a6a'); }
-  const base = 40 + G.level * 8;
+  const base = (40 + G.level * 8) * (1 + Stats.ultDmg);
   for (const e of allTargets()) {
     if (!onScreen(e)) continue;
     FX.bolt(P.x, P.y, e.x, e.y, '#fff');

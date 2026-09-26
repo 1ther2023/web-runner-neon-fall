@@ -57,3 +57,8 @@ kbd{background:#ffd23a;color:#200;padding:.1em .45em;border-bottom:3px solid #a0
 .slot b{position:absolute;bottom:-.2em;right:-.1em;font-family:"Press Start 2P",monospace;font-size:.5em;color:#fff;background:#000;padding:0 .15em}
 .slot.max{border-color:#ffd23a;box-shadow:0 0 8px #ffd23a}
 .slot.max b{color:#ffd23a}
+
+.slot i{position:absolute;top:-.25em;left:-.15em;font-style:normal;font-family:"Press Start 2P",monospace;font-size:.5em;background:#ffd23a;color:#000;padding:0 .2em}
+.card.route{width:15em}
+.card.route.r0{border-color:#ff5a6a}.card.route.r1{border-color:#b070ff}.card.route.r2{border-color:#2a9a5a}
+.card .ds b{font-weight:900}

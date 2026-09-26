@@ -115,7 +115,7 @@ const Pickups = {
       p.x += p.vx * dt; p.y += p.vy * dt;
       if (dd < 9 && P.alive) {
         this.list.splice(i, 1);
-        if (p.type === 'coin') { addCoins(p.val); Sfx.play('coin'); FX.spark(p.x, p.y, 3, '#ffd23a', 60, .2); }
+        if (p.type === 'coin') { gainCoin(p.val); Sfx.play('coin'); FX.spark(p.x, p.y, 3, '#ffd23a', 60, .2); }
         else if (p.type === 'energy') { addXP(p.val); Sfx.play('energy'); FX.spark(p.x, p.y, 4, '#4ad8ff', 80, .25); }
         else if (p.type === 'chest') { G.queue.push('chest'); Sfx.play('levelup'); FX.ring(p.x, p.y, 3, 40, .4, '#ffcf4a', 2); FX.text(P.x, P.y - 20, 'EQUIP!', '#ffcf4a', 2); }
         else if (p.type === 'heart') { P.heal(p.val); Sfx.play('pick'); }

@@ -110,16 +110,28 @@ const Player = {
     // 残影
     this.trail.push({ x: this.x, y: this.y, rot: this.rot }); if (this.trail.length > 6) this.trail.shift();
     this.hp = Math.min(this.maxHp, this.hp + Stats.regen * dt);
+    if (Stats.shieldCD) G.shieldT -= dt;
   },
   hurt(dmg, silentEdge) {
     if (!this.alive || this.inv > 0 || G.ultT > 0) return false;
+    if (Stats.shieldCD && G.shieldT <= 0) {
+      G.shieldT = Stats.shieldCD; this.inv = .6; FX.ring(this.x, this.y, 4, 26, .35, '#8af0ff', 2); FX.text(this.x, this.y - 14, 'BLOCK', '#8af0ff'); Sfx.play('stick'); return false;
+    }
     if (Stats.dodge && Math.random() < Stats.dodge) { FX.text(this.x, this.y - 14, 'DODGE', '#8af0ff'); this.inv = .3; return false; }
     dmg = Math.max(1, Math.round(dmg * Diff.edmg() * (1 - Stats.armor)));
-    this.hp -= dmg; this.inv = silentEdge ? .3 : 1.1;
+    this.hp -= dmg; this.inv = (silentEdge ? .3 : 1.1) + (silentEdge ? 0 : Stats.invBonus);
+    if (Stats.thorns && !silentEdge) {
+      FX.ring(this.x, this.y, 4, 55, .3, '#ff8a3a', 2); splash(this.x, this.y, 55, Stats.thorns, null);
+      for (let j = EB.list.length - 1; j >= 0; j--) if (d2(this.x, this.y, EB.list[j].x, EB.list[j].y) < 55 * 55) EB.list.splice(j, 1);
+    }
     addShake(silentEdge ? 3 : 7); screenFlash(.35, '#ff2030'); if (!silentEdge) hitStop(.06);
     Sfx.play('hurt'); FX.spark(this.x, this.y, 12, '#ff3040', 150, .35);
     FX.text(this.x, this.y - 14, '-' + dmg, '#ff4050', 1);
     G.combo = 0;
+    if (this.hp <= 0 && Stats.revive && !G.revived) {
+      G.revived = true; this.hp = Math.round(this.maxHp * Stats.revive); this.inv = 2.5; EB.clear(false);
+      FX.ring(this.x, this.y, 4, 120, .6, '#ffd23a', 3); screenFlash(.8, '#ffd23a'); slowMo(.3, 1); UI.banner('涅槃重生！', '共生护符之力', 1.6); Sfx.play('levelup');
+    }
     if (this.hp <= 0) { this.hp = 0; this.die('战斗阵亡', '蛛影力竭，坠入了黑潮'); }
     return true;
   },
@@ -191,8 +203,8 @@ const Shots = {
   reset() { this.list = []; },
   fire(x, y, a, dmg, o) {
     o = o || {};
-    const sp = o.speed || 380;
-    this.list.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, dmg, pierce: o.pierce || 0, hit: [], life: o.life || .9, kind: o.kind || 'web', homing: o.homing || 0, r: o.r || 3, col: o.col || '#8af0ff' });
+    const sp = (o.speed || 380) * Stats.shotSpd;
+    this.list.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, dmg, pierce: (o.pierce || 0) + Stats.pierceBonus, hit: [], life: o.life || .9, kind: o.kind || 'web', homing: o.homing || 0, r: o.r || 3, col: o.col || '#8af0ff' });
   },
   update(dt) {
     for (let i = this.list.length - 1; i >= 0; i--) {
@@ -215,7 +227,7 @@ const Shots = {
       }
       // 与敌方弹幕抵消：每枚弹药可抵消若干子弹，耗尽后消失
       if (!dead) {
-        if (s.cancel === undefined) s.cancel = 2 + s.pierce;
+        if (s.cancel === undefined) s.cancel = 2 + s.pierce + Stats.cancelBonus;
         for (let j = EB.list.length - 1; j >= 0; j--) {
           const b = EB.list[j]; if (b.delay > 0) continue;
           const rr = s.r + b.r + 3;

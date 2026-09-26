@@ -45,11 +45,24 @@ const UI = {
     $('skipBtn').style.display = mode === 'upgrade' ? '' : 'none';
     this.show('pick'); return true;
   },
+  openRoutes(id, free) {
+    const e = EQUIPS.find(x => x.id === id);
+    this.mode = 'route';
+    this.cards = EQ_ROUTES[id].map((R, i) => ({ kind: 'route', id, route: i, free, ico: e.ico, nm: R.nm, tp: '路线 ' + ROUTE_TAG[i], cls: ['', 'summon', 'passive'][i],
+      ds: e.ds(2) + '<br><b style="color:#ffd23a">Lv2</b> ' + R.ds(1) + '<br><b style="color:#ffd23a">Lv3</b> ' + R.ds(2) + '<br><b style="color:#ffd23a">MAX</b> ' + R.ds(3), lvl: 'Lv1 → Lv2' }));
+    $('pickTitle').textContent = e.nm + ' · 选择升级路线（选定后不可更改）';
+    $('cards').innerHTML = this.cards.map((c, i) => `<div class="card route r${i}" data-i="${i}"><div class="key">[${i + 1}]</div><div class="ico">${c.ico}</div><div class="nm">${c.nm}</div><div class="tp ${c.cls}">${c.tp}</div><div class="ds">${c.ds}</div><div class="lv">${c.lvl}</div></div>`).join('');
+    $('cards').querySelectorAll('.card').forEach(c => c.addEventListener('click', () => this.choose(+c.dataset.i)));
+    $('skipBtn').style.display = 'none';
+    Sfx.play('pick');
+  },
   upCards(free) {
     const pool = Equip.upgradable().slice(), out = [];
     while (out.length < 3 && pool.length) {
       const o = pool.splice(randi(0, pool.length - 1), 1)[0], e = EQUIPS.find(x => x.id === o.id), nl = o.lv + 1;
-      out.push({ kind: 'equipUp', id: o.id, free, ico: e.ico, nm: e.nm, tp: free ? '免费强化' : '💰 ' + Equip.cost(), cls: 'passive', ds: e.ds(nl), lvl: `Lv${o.lv} → ${nl >= EQ_MAX ? 'MAX' : 'Lv' + nl}` });
+      const R = o.route >= 0 ? EQ_ROUTES[o.id][o.route] : null;
+      const ds = e.ds(nl) + (R ? '<br><b style="color:#ffd23a">路线 ' + ROUTE_TAG[o.route] + '·' + R.nm + '</b>：' + R.ds(nl - 1) : '<br><b style="color:#4ad8ff">选择后进入三选一升级路线</b>');
+      out.push({ kind: 'equipUp', id: o.id, free, ico: e.ico, nm: e.nm, tp: free ? '免费强化' : '💰 ' + Equip.cost(), cls: 'passive', ds, lvl: `Lv${o.lv} → ${nl >= EQ_MAX ? 'MAX' : 'Lv' + nl}` });
     }
     return out;
   },
@@ -59,11 +72,12 @@ const UI = {
     if (c) {
       if (c.kind === 'skill') Skills.take(c.id);
       else if (c.kind === 'equip') Equip.add(c.id);
-      else if (c.kind === 'equipUp') { if (!c.free) { G.coins -= Equip.cost(); Equip.ups++; } Equip.up(c.id); }
+      else if (c.kind === 'equipUp' && Equip.get(c.id).route < 0) { this.openRoutes(c.id, c.free); return; }
+      else if (c.kind === 'equipUp' || c.kind === 'route') { if (!c.free) { G.coins -= Equip.cost(); Equip.ups++; } Equip.up(c.id, c.route); }
       Sfx.play('pick');
       FX.text(Player.x, Player.y - 24, 'POWER UP', '#ffe04a', 2);
       FX.ring(Player.x, Player.y, 4, 40, .4, '#ffe04a', 2);
-    } else if (this.mode === 'upgrade') G.upSkipAt = G.coins + Equip.cost();
+    } else if (this.mode === 'upgrade' || this.mode === 'route') G.upSkipAt = G.coins + Equip.cost();
     this.hide('pick'); this.renderSlots();
     // 选完后暂停，等玩家重新按住鼠标再继续；未按住的手会立即松开
     G.state = handDown(0) || handDown(1) ? 'play' : 'resume';
@@ -73,7 +87,7 @@ const UI = {
     let h = '';
     for (let i = 0; i < SK_SLOTS; i++) { const o = Skills.owned[i]; h += o ? `<div class="slot sk ${o.lv >= SK_MAX ? 'max' : ''}"><span>${SKMAP[o.id].ico}</span><b>${this.lvTxt(o.lv, SK_MAX)}</b></div>` : '<div class="slot empty"></div>'; }
     $('skSlots').innerHTML = h; h = '';
-    for (let i = 0; i < EQ_SLOTS; i++) { const o = Equip.owned[i]; h += o ? `<div class="slot eq ${o.lv >= EQ_MAX ? 'max' : ''}"><span>${EQUIPS.find(e => e.id === o.id).ico}</span><b>${this.lvTxt(o.lv, EQ_MAX)}</b></div>` : '<div class="slot empty"></div>'; }
+    for (let i = 0; i < EQ_SLOTS; i++) { const o = Equip.owned[i]; h += o ? `<div class="slot eq ${o.lv >= EQ_MAX ? 'max' : ''}"><span>${EQUIPS.find(e => e.id === o.id).ico}</span>${o.route >= 0 ? '<i>' + ROUTE_TAG[o.route] + '</i>' : ''}<b>${this.lvTxt(o.lv, EQ_MAX)}</b></div>` : '<div class="slot empty"></div>'; }
     $('eqSlots').innerHTML = h;
   },
 };
@@ -83,7 +97,7 @@ function newGame() {
     time: 0, camDX: 0, camSpeed: 45, shake: 0, flash: 0, hitstop: 0, slow: 1, slowT: 0, dist: 0, kills: 0, coins: 0,
     totalCoins: 0, energy: 0, bosses: 0, boss: null, nextBossT: 120, combo: 0, comboT: 0, maxCombo: 0,
     started: false, grazes: 0, ultT: 0, inputLock: .15, deathT: 0, runTime: 0, warnT: 0,
-    xp: 0, level: 1, queue: [], upSkipAt: 0, overAnnounced: false,
+    xp: 0, level: 1, queue: [], upSkipAt: 0, overAnnounced: false, shieldT: 0, revived: false,
   });
   G.cam.x = 0; G.cam.y = 0; G.camDY = 0; BG.build(0); World.reset();
   [FX, Pickups, EB, Lasers, Enemies, Shots, Skills, Equip, Bombs].forEach(m => m.reset());
