@@ -37,8 +37,8 @@ const FX = {
       if (p.type === 'line') { p.vx *= 1 - 4 * dt; p.vy *= 1 - 4 * dt; }
       if (p.type === 'smoke') { p.vx *= 1 - 2 * dt; p.vy *= 1 - 2 * dt; }
     }
-    for (let i = this.texts.length - 1; i >= 0; i--) { const t = this.texts[i]; t.life -= dt; t.x += cdx; t.y += t.vy * dt; t.vy *= 1 - 3 * dt; if (t.life <= 0) this.texts.splice(i, 1); }
-    for (let i = this.rings.length - 1; i >= 0; i--) { const r = this.rings[i]; r.life -= dt; r.x += cdx; if (r.life <= 0) this.rings.splice(i, 1); }
+    for (let i = this.texts.length - 1; i >= 0; i--) { const t = this.texts[i]; t.life -= dt; t.x += cdx; t.y += t.vy * dt + G.camDY; t.vy *= 1 - 3 * dt; if (t.life <= 0) this.texts.splice(i, 1); }
+    for (let i = this.rings.length - 1; i >= 0; i--) { const r = this.rings[i]; r.life -= dt; r.x += cdx; r.y += G.camDY; if (r.life <= 0) this.rings.splice(i, 1); }
     for (let i = this.bolts.length - 1; i >= 0; i--) { const b = this.bolts[i]; b.life -= dt; if (b.life <= 0) this.bolts.splice(i, 1); }
     for (let i = this.strands.length - 1; i >= 0; i--) {
       const s = this.strands[i]; s.life -= dt; s.va += -Math.sin(s.a) * 12 * dt; s.va *= 1 - 1.5 * dt; s.a += s.va * dt;
@@ -106,7 +106,7 @@ const Pickups = {
   update(dt) {
     const P = Player, mag = Stats.magnet;
     for (let i = this.list.length - 1; i >= 0; i--) {
-      const p = this.list[i]; p.age += dt; p.x += G.camDX;
+      const p = this.list[i]; p.age += dt; p.x += G.camDX; p.y += G.camDY;
       const dd = Math.sqrt(d2(p.x, p.y, P.x, P.y));
       if (p.age > .3 && (dd < mag || p.age > (p.type === 'chest' ? .6 : 1.6) || G.ultT > 0)) {
         const a = angTo(p.x, p.y, P.x, P.y), sp = 260 + p.age * 200;
@@ -121,7 +121,7 @@ const Pickups = {
         else if (p.type === 'heart') { P.heal(p.val); Sfx.play('pick'); }
         continue;
       }
-      if (p.y > H + 30 || p.x < G.cam.x - 40) this.list.splice(i, 1);
+      if (p.y > G.cam.y + H + 30 || p.x < G.cam.x - 40) this.list.splice(i, 1);
     }
   },
   draw(ctx, cx) {

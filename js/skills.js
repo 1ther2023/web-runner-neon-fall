@@ -5,7 +5,7 @@ const EQUIPS = [
   { id: 'armor', ico: '🛡️', nm: '凯夫拉护甲', ds: lv => '受到伤害 -' + [8, 15, 22, 30][lv - 1] + '%' },
   { id: 'helmet', ico: '🎯', nm: '蜘蛛感应头盔', ds: lv => '暴击率 +' + [6, 12, 18, 25][lv - 1] + '%，暴伤 +' + [20, 40, 60, 90][lv - 1] + '%' },
   { id: 'glove', ico: '🧲', nm: '磁力手套', ds: lv => '拾取范围 +' + [40, 80, 120, 180][lv - 1] + '%，经验 +' + [10, 20, 30, 45][lv - 1] + '%' },
-  { id: 'charm', ico: '🩸', nm: '共生护符', ds: lv => '每秒回复 ' + [.4, .8, 1.2, 1.8][lv - 1] + ' 生命' },
+  { id: 'charm', ico: '🩸', nm: '共生护符', ds: lv => '每秒额外回复 ' + [.4, .8, 1.2, 1.8][lv - 1] + ' 生命' },
   { id: 'shooter', ico: '⚙️', nm: '高速发射器', ds: lv => '所有技能冷却 -' + [8, 15, 22, 30][lv - 1] + '%' },
   { id: 'band', ico: '💪', nm: '力量腕带', ds: lv => '所有伤害 +' + [12, 25, 40, 60][lv - 1] + '%' },
   { id: 'core', ico: '🔋', nm: '风暴核心', ds: lv => '风暴充能 +' + [25, 50, 80, 120][lv - 1] + '%，擦弹范围扩大' },
@@ -33,7 +33,7 @@ function recalcStats() {
     armor: t([.08, .15, .22, .3], 'armor'),
     magnet: 50 * (1 + t([.4, .8, 1.2, 1.8], 'glove')),
     xpMul: 1 + t([.1, .2, .3, .45], 'glove'),
-    regen: t([.4, .8, 1.2, 1.8], 'charm'),
+    regen: .5 + t([.4, .8, 1.2, 1.8], 'charm'),
     stormMul: 1 + t([.25, .5, .8, 1.2], 'core'),
     grazeR: 13 + t([2, 4, 6, 9], 'core'),
     range: 190, reel: 20, dodge: 0,
@@ -216,13 +216,13 @@ const Bombs = {
   add(x, y, tx, ty, r, dmg) { const T = .45; this.list.push({ x, y, vx: (tx - x) / T, vy: (ty - y) / T - 120 * T, t: T, r, dmg }); },
   update(dt) {
     for (let i = this.list.length - 1; i >= 0; i--) {
-      const b = this.list[i]; b.t -= dt; b.vy += 240 * dt; b.x += b.vx * dt + G.camDX; b.y += b.vy * dt;
+      const b = this.list[i]; b.t -= dt; b.vy += 240 * dt; b.x += b.vx * dt + G.camDX; b.y += b.vy * dt + G.camDY;
       if (b.t <= 0) {
         this.list.splice(i, 1); FX.boom(b.x, b.y, .9, ['#fff', '#e8f4ff', '#ffb050', '#ff5a6a']); FX.ring(b.x, b.y, 3, b.r, .3, '#ffb050', 2);
         splash(b.x, b.y, b.r, b.dmg, null); Sfx.play('kill'); addShake(2.5);
       }
     }
-    for (let i = PBeams.length - 1; i >= 0; i--) { PBeams[i].life -= dt; PBeams[i].x += G.camDX; if (PBeams[i].life <= 0) PBeams.splice(i, 1); }
+    for (let i = PBeams.length - 1; i >= 0; i--) { PBeams[i].life -= dt; PBeams[i].x += G.camDX; PBeams[i].y += G.camDY; if (PBeams[i].life <= 0) PBeams.splice(i, 1); }
   },
   draw(ctx, cx) {
     for (const b of this.list) { const x = Math.round(b.x - cx), y = Math.round(b.y); ctx.fillStyle = '#e8f4ff'; ctx.fillRect(x - 2, y - 3, 5, 6); ctx.fillStyle = '#ff5a6a'; ctx.fillRect(x - 1, y - 1, 3, 2); }

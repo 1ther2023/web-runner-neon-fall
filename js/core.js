@@ -11,7 +11,7 @@ const angTo = (ax, ay, bx, by) => Math.atan2(by - ay, bx - ax);
 
 // 全局游戏状态
 const G = {
-  state: 'title', time: 0, cam: { x: 0 }, camDX: 0, camSpeed: 40,
+  state: 'title', time: 0, cam: { x: 0, y: 0 }, camDX: 0, camDY: 0, camSpeed: 40,
   shake: 0, flash: 0, flashColor: '#fff', hitstop: 0, slow: 1, slowT: 0,
   dist: 0, kills: 0, coins: 0, totalCoins: 0, energy: 0, bosses: 0,
   boss: null, nextBossDist: 700, combo: 0, comboT: 0, maxCombo: 0,

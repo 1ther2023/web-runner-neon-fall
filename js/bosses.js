@@ -7,7 +7,7 @@ const Lasers = {
   update(dt) {
     const P = Player;
     for (let i = this.list.length - 1; i >= 0; i--) {
-      const L = this.list[i]; L.t += dt; L.x += G.camDX;
+      const L = this.list[i]; L.t += dt; L.x += G.camDX; L.y += G.camDY;
       if (L.src) { L.x = L.src.x; L.y = L.src.y; }
       if (L.t > L.warn) {
         if (!L.fired) { L.fired = true; Sfx.play('laser'); addShake(4); }
@@ -46,7 +46,7 @@ function makeBoss() {
   const lv = G.bosses, def = BOSSDEF[lv % 3], mul = (1 + lv * 1.3) * Diff.over();
   return {
     isBoss: true, alive: true, targetable: false, def, lv, name: def.name + (lv >= 3 ? ' MK' + (Math.floor(lv / 3) + 1) : ''),
-    x: G.cam.x - 70, y: H / 2, vx: 0, vy: 0, hp: def.hp * mul, maxHp: def.hp * mul, r: 20, t: 0, flash: 0,
+    x: G.cam.x - 70, y: G.cam.y + H / 2, vx: 0, vy: 0, hp: def.hp * mul, maxHp: def.hp * mul, r: 20, t: 0, flash: 0,
     state: 'enter', patT: 1.6, patI: 0, timers: [], sx: -70, tsx: 80, dying: 0, dash: null, enraged: false,
     after(d, fn) { this.timers.push({ t: d, fn }); },
     hitTest(x, y, r) { const rr = this.r + r; return d2(x, y, this.x, this.y) < rr * rr; },
@@ -61,7 +61,7 @@ function makeBoss() {
       }
     },
     update(dt) {
-      this.t += dt; this.flash -= dt;
+      this.t += dt; this.flash -= dt; this.y += G.camDY;
       const P = Player;
       if (this.state === 'enter') {
         this.sx = lerp(this.sx, this.tsx, 1 - Math.exp(-2 * dt));
@@ -71,7 +71,7 @@ function makeBoss() {
         if (!this.dash) {
           this.tsx = 70 + Math.sin(this.t * .7) * 40 + (this.enraged ? 30 : 0);
           this.sx = lerp(this.sx, this.tsx, 1 - Math.exp(-1.5 * dt));
-          this.y = lerp(this.y, clamp(P.y + Math.sin(this.t * 1.3) * 40, 40, 200), 1 - Math.exp(-1.2 * dt));
+          this.y = lerp(this.y, clamp(P.y + Math.sin(this.t * 1.3) * 40, G.cam.y + 40, G.cam.y + 200), 1 - Math.exp(-1.2 * dt));
         } else {
           const D = this.dash; D.t += dt;
           if (D.t < .45) { this.sx = lerp(this.sx, D.sx0 - 20, 6 * dt); }
@@ -144,7 +144,7 @@ const BPAT = {
     for (let w = 0; w < 6; w++) b.after(w * .22, () => { for (let k = 0; k < n; k++) { const a = k / n * TAU + w * .3; for (const s of [1, -1]) EB.add({ x: b.x, y: b.y, vx: Math.cos(a) * 90, vy: Math.sin(a) * 90, av: s * .9, col: s > 0 ? '#b070ff' : '#ff5ab0', r: 3, dmg: 10, life: 6 }); } });
   },
   summon(b) {
-    for (let i = 0; i < 6 + b.lv; i++) b.after(i * .1, () => Enemies.spawn('blob', b.sx + 10, b.y + rand(-30, 30)));
+    for (let i = 0; i < 6 + b.lv; i++) b.after(i * .1, () => Enemies.spawn('blob', b.sx + 10, b.y - G.cam.y + rand(-30, 30)));
     aimed(b.x, b.y, 7, .2, 120, '#b070ff', 4, 12);
   },
   wave(b) {

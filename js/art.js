@@ -124,6 +124,18 @@ function pxRing(ctx, cx, cy, r, col, th) {
   for (let i = 0; i < n; i++) { const a = i / n * TAU; ctx.fillRect(Math.round(cx + Math.cos(a) * r) - (th >> 1), Math.round(cy + Math.sin(a) * r) - (th >> 1), th, th); }
 }
 
+// 背景降饱和 + 压暗，突出角色与弹幕
+function dimCanvas(c, sat, bri) {
+  const x = c.getContext('2d'), d = x.getImageData(0, 0, c.width, c.height), p = d.data;
+  for (let i = 0; i < p.length; i += 4) {
+    if (!p[i + 3]) continue;
+    const r = p[i], g = p[i + 1], b = p[i + 2], l = r * .3 + g * .59 + b * .11;
+    p[i] = (l + (r - l) * sat) * bri; p[i + 1] = (l + (g - l) * sat) * bri; p[i + 2] = (l + (b - l) * sat) * bri;
+  }
+  x.putImageData(d, 0, 0); return c;
+}
+const BG_SAT = .5, BG_BRI = .55;
+
 // 弹幕辉光缓存
 const GLOW = {};
 function glowSpr(col, r) {
@@ -182,6 +194,7 @@ const BG = {
     // 远景天际线
     const far = this.skyline(640, T.far, 120, 205, [T.win[0] + '55'], .04, 3);
     const mid = this.skyline(800, T.mid, 150, 225, T.win, .12, 5);
+    [sky, far, mid].forEach(c => dimCanvas(c, BG_SAT, BG_BRI));
     this.layers = this.cache[ti] = { sky, far, mid, T };
     return this.layers;
   },
@@ -198,19 +211,20 @@ const BG = {
     }
     return c;
   },
-  draw(ctx, camX, t) {
-    const L = this.layers;
+  draw(ctx, camX, t, camY) {
+    const L = this.layers; camY = camY || 0;
     ctx.drawImage(L.sky, 0, 0);
     const tile = (img, f, yo) => { const tw = img.width; let ox = -Math.floor((camX * f) % tw); if (ox > 0) ox -= tw; for (let x = ox; x < W; x += tw) ctx.drawImage(img, x, yo || 0); };
-    tile(L.far, .12, 0);
+    tile(L.far, .12, Math.round(-camY * .08));
     // 远处探照灯
-    ctx.globalAlpha = .07; ctx.fillStyle = L.T.win[2];
+    ctx.globalAlpha = .035; ctx.fillStyle = L.T.win[2];
     for (let i = 0; i < 2; i++) {
       const bx = ((i * 260 - camX * .2) % 600 + 600) % 600 - 60, a = Math.sin(t * .5 + i * 2) * .5;
       ctx.beginPath(); ctx.moveTo(bx, H); ctx.lineTo(bx + Math.sin(a) * 300 - 20, 0); ctx.lineTo(bx + Math.sin(a) * 300 + 20, 0); ctx.fill();
     }
     ctx.globalAlpha = 1;
-    tile(L.mid, .35, 12);
+    const my = Math.round(12 - camY * .2); tile(L.mid, .35, my);
+    if (my + H < H) { ctx.fillStyle = L.T.mid; ctx.fillRect(0, my + H, W, -my); }
   },
   // 底部黑潮 & 火光
   drawAbyss(ctx, camX, t) {

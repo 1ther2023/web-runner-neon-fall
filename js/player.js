@@ -17,7 +17,7 @@ const Player = {
   },
   shoot(i) {
     const h = this.hands[i]; const [hx, hy] = this.handWorld(i);
-    let tx = G.cam.x + Input.mx, ty = Input.my;
+    let tx = G.cam.x + Input.mx, ty = Input.my + G.cam.y;
     let dx = tx - hx, dy = ty - hy, d = Math.hypot(dx, dy) || 1;
     const R = Stats.range; if (d > R) { tx = hx + dx / d * R; ty = hy + dy / d * R; d = R; }
     // 从目标点向玩家回溯，寻找可粘附点（宽容判定）
@@ -50,10 +50,9 @@ const Player = {
     // 手部输入
     for (let i = 0; i < 2; i++) {
       const h = this.hands[i], down = handDown(i) && G.inputLock <= 0;
-      h.retry -= dt; h.grace = (h.grace || 0) - dt;
-      if (down) h.grace = 0;
+      h.retry -= dt;
       if (down && !h.rope && (!h.was || h.retry <= 0)) this.shoot(i);
-      if (!down && h.rope && h.grace <= 0) this.release(i);
+      if (!down && h.rope) this.release(i);
       h.was = down;
       const r = h.rope;
       if (r && r.state === 'fly') {
@@ -93,14 +92,14 @@ const Player = {
     }
     const sp = Math.hypot(this.vx, this.vy); if (sp > 400) { this.vx *= 400 / sp; this.vy *= 400 / sp; }
     // 边界：顶部 / 左侧黑潮 / 坠落
-    if (this.y < -30) { this.y = -30; if (this.vy < 0) this.vy = 0; }
+    if (this.y < -640) { this.y = -640; if (this.vy < 0) this.vy = 0; }
     const left = G.cam.x + 8;
     if (this.x < left) {
       this.x = left; this.vx = Math.max(this.vx, G.camSpeed + 60);
       this.edgeT -= dt;
       if (this.edgeT <= 0) { this.edgeT = .35; this.hurt(3 + Diff.over() * 2, true); FX.spark(this.x, this.y, 8, '#b070ff', 120, .3); }
     }
-    if (this.y > H + 14) { this.die('坠落阵亡', '双手都放开了蛛丝……黑潮吞没了你'); return; }
+    if (this.y > G.cam.y + H + 14 && !ropes.length) { this.die('坠落阵亡', '双手都放开了蛛丝……黑潮吞没了你'); return; }
     // 姿态
     if (ropes.length) {
       let ax = 0, ay = 0; for (const r of ropes) { ax += r.ax; ay += r.ay; } ax /= ropes.length; ay /= ropes.length;
@@ -110,7 +109,7 @@ const Player = {
     else this.rot = lerpAng(this.rot, clamp(this.vx * .002, -.5, .5), 1 - Math.exp(-6 * dt));
     // 残影
     this.trail.push({ x: this.x, y: this.y, rot: this.rot }); if (this.trail.length > 6) this.trail.shift();
-    if (Stats.regen) this.hp = Math.min(this.maxHp, this.hp + Stats.regen * dt);
+    this.hp = Math.min(this.maxHp, this.hp + Stats.regen * dt);
   },
   hurt(dmg, silentEdge) {
     if (!this.alive || this.inv > 0 || G.ultT > 0) return false;
@@ -202,8 +201,8 @@ const Shots = {
         const t = findTarget(s.x, s.y, 220);
         if (t) { const a = angTo(s.x, s.y, t.x, t.y), sp = Math.hypot(s.vx, s.vy); const ca = Math.atan2(s.vy, s.vx); const na = lerpAng(ca, a, Math.min(1, s.homing * dt)); s.vx = Math.cos(na) * sp; s.vy = Math.sin(na) * sp; }
       }
-      s.x += s.vx * dt + G.camDX; s.y += s.vy * dt;
-      let dead = s.life <= 0 || s.x < G.cam.x - 20 || s.x > G.cam.x + W + 20 || s.y < -20 || s.y > H + 20;
+      s.x += s.vx * dt + G.camDX; s.y += s.vy * dt + G.camDY;
+      let dead = s.life <= 0 || s.x < G.cam.x - 20 || s.x > G.cam.x + W + 20 || s.y < G.cam.y - 20 || s.y > G.cam.y + H + 20;
       if (!dead) {
         const e = hitTest(s.x, s.y, s.r, s.hit);
         if (e) {

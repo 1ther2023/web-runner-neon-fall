@@ -65,9 +65,9 @@ const UI = {
       FX.ring(Player.x, Player.y, 4, 40, .4, '#ffe04a', 2);
     } else if (this.mode === 'upgrade') G.upSkipAt = G.coins + Equip.cost();
     this.hide('pick'); this.renderSlots();
-    Player.hands.forEach(h => { if (h.rope) h.grace = 1.2; }); // 保留蛛丝，便于重新按住
-    slowMo(.4, .6); G.inputLock = .1;
-    G.state = 'play';
+    // 选完后暂停，等玩家重新按住鼠标再继续；未按住的手会立即松开
+    G.state = handDown(0) || handDown(1) ? 'play' : 'resume';
+    if (G.state === 'play') slowMo(.4, .6);
   },
   renderSlots() {
     let h = '';
@@ -85,7 +85,7 @@ function newGame() {
     started: false, grazes: 0, ultT: 0, inputLock: .15, deathT: 0, runTime: 0, warnT: 0,
     xp: 0, level: 1, queue: [], upSkipAt: 0, overAnnounced: false,
   });
-  G.cam.x = 0; BG.build(0); World.reset();
+  G.cam.x = 0; G.cam.y = 0; G.camDY = 0; BG.build(0); World.reset();
   [FX, Pickups, EB, Lasers, Enemies, Shots, Skills, Equip, Bombs].forEach(m => m.reset());
   Player.reset(); recalcStats(); Player.hp = Player.maxHp; G.startX = Player.x; G.state = 'play';
   UI.renderSlots(); UI.show('hud');
@@ -131,6 +131,7 @@ function update(rdt) {
   if (keyHit('KeyM')) { Sfx.muted = !Sfx.muted; }
   if (G.state === 'pick') { for (let i = 0; i < 3; i++) if (keyHit('Digit' + (i + 1))) UI.choose(i); if (UI.mode === 'upgrade' && keyHit('KeyX')) UI.choose(-1); return; }
   if (G.state === 'play' && (keyHit('KeyP') || keyHit('Escape'))) { G.state = 'pause'; UI.show('pause'); return; }
+  if (G.state === 'resume') { G.time += rdt; if (handDown(0) || handDown(1)) { G.state = 'play'; slowMo(.4, .6); } return; }
   if (G.state === 'pause') { if (keyHit('KeyP') || keyHit('Escape')) { G.state = 'play'; UI.hide('pause'); } return; }
   if (G.state === 'title') { const dx = 30 * rdt; G.cam.x += dx; G.camDX = dx; G.time += rdt; World.update(G.cam.x); return; }
 
@@ -150,6 +151,18 @@ function update(rdt) {
     if (target > nx) nx = lerp(nx, target, 1 - Math.exp(-5 * dt));
   }
   G.camDX = nx - G.cam.x; G.cam.x = nx;
+  // 纵向镜头：向上飞出屏幕时抬升；抓着蛛丝下坠时下降；否则回到原位
+  let ny = G.cam.y;
+  if (G.state === 'play' && P.alive) {
+    const holding = P.hands.some(h => h.rope && h.rope.state === 'stuck');
+    const up = P.y - 45, down = P.y - (H - 45);
+    let ty = 0;
+    if (up < 0) ty = Math.max(-600, up);
+    else if (holding && down > 0) ty = Math.min(down, 160);
+    else if (!holding && G.cam.y > 0) ty = clamp(down, 0, G.cam.y);
+    ny = lerp(G.cam.y, ty, 1 - Math.exp(-(ty < G.cam.y && up < G.cam.y ? 10 : 6) * dt));
+  }
+  G.camDY = ny - G.cam.y; G.cam.y = ny;
 
   if (G.state === 'play') {
     if (keyHit('Space')) ultimate();
@@ -168,7 +181,7 @@ function update(rdt) {
   G.shake = Math.max(0, G.shake - 30 * rdt); G.flash = Math.max(0, G.flash - 2.5 * rdt);
 
   // 环境余烬
-  if (Math.random() < dt * 20) FX.p(G.cam.x + rand(0, W + 60), H + 2, rand(-20, 10), rand(-60, -20), rand(1.5, 3.5), pick(['#ff8a1e', '#ffcf4a', '#ff3040', '#b070ff']), 1, 'sq', -5);
+  if (Math.random() < dt * 20) FX.p(G.cam.x + rand(0, W + 60), G.cam.y + H + 2, rand(-20, 10), rand(-60, -20), rand(1.5, 3.5), pick(['#ff8a1e', '#ffcf4a', '#ff3040', '#b070ff']), 1, 'sq', -5);
 
   if (G.state === 'play' && P.alive && G.started && G.hitstop <= 0 && !(G.boss && G.boss.state === 'dying')) {
     if (G.queue.length) UI.open(G.queue.shift());
@@ -182,7 +195,8 @@ function render() {
   const cx = G.cam.x;
   ctx.save();
   if (G.shake > 0) ctx.translate(Math.round(rand(-G.shake, G.shake)), Math.round(rand(-G.shake, G.shake)));
-  BG.draw(ctx, cx, G.time);
+  BG.draw(ctx, cx, G.time, G.cam.y);
+  ctx.save(); ctx.translate(0, -Math.round(G.cam.y));
   World.draw(ctx, cx, G.time);
   FX.drawBack(ctx, cx);
   if (G.state !== 'title') {
@@ -197,9 +211,12 @@ function render() {
     EB.draw(ctx, cx);
   }
   FX.draw(ctx, cx);
+  ctx.restore();
   BG.drawAbyss(ctx, cx, G.time);
   if (G.state !== 'title') drawTide(ctx);
+  ctx.save(); ctx.translate(0, -Math.round(G.cam.y));
   FX.drawTexts(ctx, cx);
+  ctx.restore();
   ctx.restore();
 
   // 速度线
@@ -278,16 +295,21 @@ function drawHUD(c) {
   }
   // 速度
   drawText(c, 'SPD ' + (Math.hypot(P.vx, P.vy) / 10).toFixed(0) + 'M/S', 6, 34, '#8af0ff');
+  if (G.state === 'resume') {
+    c.fillStyle = '#00000088'; c.fillRect(0, H / 2 - 16, W, 30);
+    drawText(c, 'HOLD LMB / RMB TO RESUME', W / 2, H / 2 - 10, (G.time * 3 | 0) % 2 ? '#fff' : '#ffe04a', 2, 'center');
+    drawText(c, 'ROPES WITHOUT A HELD BUTTON WILL BE RELEASED', W / 2, H / 2 + 5, '#aaa', 1, 'center');
+  }
   if (!G.started && P.alive) drawText(c, 'HOLD LMB / RMB ON A BUILDING', W / 2, H * .72, (G.time * 3 | 0) % 2 ? '#fff' : '#ffe04a', 1, 'center');
 }
 function drawCursor(c) {
   const P = Player; if (!P.alive) return;
   const mx = Math.round(Input.mx), my = Math.round(Input.my);
-  const hx = P.x - G.cam.x, hy = P.y - 2;
+  const hx = P.x - G.cam.x, hy = P.y - 2 - G.cam.y;
   let dx = mx - hx, dy = my - hy, d = Math.hypot(dx, dy) || 1, R = Stats.range;
   let ok = false, tx = mx, ty = my;
   const L = Math.min(d, R);
-  for (let s = L; s >= 22; s -= 6) { const px = hx + dx / d * s, py = hy + dy / d * s; if (World.anchorAt(px + G.cam.x, py)) { ok = true; tx = px; ty = py; break; } }
+  for (let s = L; s >= 22; s -= 6) { const px = hx + dx / d * s, py = hy + dy / d * s; if (World.anchorAt(px + G.cam.x, py + G.cam.y)) { ok = true; tx = px; ty = py; break; } }
   const col = ok ? '#4aff8a' : '#ff4050';
   // 瞄准虚线
   c.fillStyle = col + '88';

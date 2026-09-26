@@ -19,7 +19,7 @@ const World = {
     }
   },
   renderBld(b) {
-    const T = b.T, top = 26, h = H - b.y + 4; b.top = top;
+    const T = b.T, top = 26, h = H - b.y + 200; b.top = top;
     const [c, x] = mkCanvas(b.w, h + top); b.c = c;
     const base = pick(T.bld); const Y = top;
     x.fillStyle = base; x.fillRect(0, Y, b.w, h);
@@ -59,8 +59,12 @@ const World = {
       x.fillStyle = '#333'; x.fillRect(sx + 3, Y - 2, 1, 2); x.fillRect(sx + tw - 4, Y - 2, 1, 2);
       b.sign = { x: sx, y: Y - 13, w: tw, c: nc };
     }
+    dimCanvas(c, BG_SAT + .1, BG_BRI + .1);
   },
   renderFloat(f) {
+    this._rf(f); dimCanvas(f.c, BG_SAT + .1, BG_BRI + .1); return f;
+  },
+  _rf(f) {
     const [c, x] = mkCanvas(f.w, f.h + 6); f.c = c;
     x.fillStyle = '#2a2a3a'; x.fillRect(2, 0, f.w - 4, f.h); x.fillRect(0, 2, f.w, f.h - 4);
     x.fillStyle = '#5a5a7a'; x.fillRect(2, 0, f.w - 4, 1);
@@ -87,7 +91,7 @@ const World = {
       ctx.drawImage(b.c, sx, b.y - b.top);
       if (b.light && Math.sin(t * 4 + b.x) > 0) { ctx.fillStyle = '#ff2030'; ctx.fillRect(sx + b.light.x - 1, b.y - b.top + b.light.y, 3, 2); }
       if (b.sign && Math.sin(t * 9 + b.x * .1) > -.8) {
-        ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .35 + Math.sin(t * 3 + b.x) * .1;
+        ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .12 + Math.sin(t * 3 + b.x) * .04;
         ctx.drawImage(glowSpr(b.sign.c, 12), sx + b.sign.x + b.sign.w / 2 - 38, b.y - b.top + b.sign.y - 32, 76, 76);
         ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
       }

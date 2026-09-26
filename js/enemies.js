@@ -11,7 +11,7 @@ const EB = {
     const P = Player;
     for (let i = this.list.length - 1; i >= 0; i--) {
       const b = this.list[i];
-      b.x += G.camDX;
+      b.x += G.camDX; b.y += G.camDY;
       if (b.delay > 0) { b.delay -= dt; continue; }
       b.life -= dt;
       if (b.av) { const c = Math.cos(b.av * dt), s = Math.sin(b.av * dt); const vx = b.vx * c - b.vy * s; b.vy = b.vx * s + b.vy * c; b.vx = vx; }
@@ -19,7 +19,7 @@ const EB = {
       if (b.grav) b.vy += b.grav * dt;
       b.x += b.vx * dt; b.y += b.vy * dt;
       const sx = b.x - G.cam.x;
-      if (b.life <= 0 || sx < -30 || sx > W + 40 || b.y < -40 || b.y > H + 30) { this.list.splice(i, 1); continue; }
+      if (b.life <= 0 || sx < -30 || sx > W + 40 || b.y < G.cam.y - 40 || b.y > G.cam.y + H + 30) { this.list.splice(i, 1); continue; }
       if (!P.alive) continue;
       const dd = d2(b.x, b.y, P.x, P.y), hr = b.r * .7 + 1.5;
       if (dd < hr * hr) {
@@ -87,6 +87,7 @@ const Enemies = {
       type, d, x: G.cam.x + sx, y, vx: 0, vy: 0, hp: d.hp * D, maxHp: d.hp * D, r: d.r, t: rand(0, 5), flash: 0,
       fireT: rand(.8, 1.6), tx: rand(250, 440), ty: clamp(y + rand(-40, 40), 22, 200), life: rand(9, 14), burst: 0, burstT: 0,
     }, o || {});
+    e.y += G.cam.y; e.ty += G.cam.y;
     this.list.push(e); return e;
   },
   spawnElite() {
@@ -124,7 +125,7 @@ const Enemies = {
     for (let i = this.list.length - 1; i >= 0; i--) {
       const e = this.list[i];
       if (e.dead) { this.list.splice(i, 1); continue; }
-      e.t += dt; e.flash -= dt; e.life -= dt; e.x += G.camDX;
+      e.t += dt; e.flash -= dt; e.life -= dt; e.x += G.camDX; e.y += G.camDY; e.ty += G.camDY;
       const d = e.d;
       if (d.kamikaze) {
         const a = angTo(e.x, e.y, P.x, P.y), sp = d.spd + e.t * 15;
@@ -144,7 +145,7 @@ const Enemies = {
         if (e.burst > 0) { e.burstT -= dt; if (e.burstT <= 0) { e.burstT = .07; e.burst--; const a = e.t * 5; for (let k = 0; k < 3; k++) { const aa = a + k * TAU / 3; EB.add({ x: e.x, y: e.y, vx: Math.cos(aa) * 80 * bspd(), vy: Math.sin(aa) * 80 * bspd(), col: '#2fd0c0', r: 3, dmg: 9 }); } } }
       }
       e.x += e.vx * dt; e.y += e.vy * dt;
-      if (e.x < G.cam.x - 60 || e.y > H + 40) { this.list.splice(i, 1); continue; }
+      if (e.x < G.cam.x - 60 || e.y > G.cam.y + H + 40) { this.list.splice(i, 1); continue; }
       if (P.alive && d2(e.x, e.y, P.x, P.y) < (e.r + 4) * (e.r + 4)) {
         if (P.hurt(d.kamikaze ? 8 : 6) && d.kamikaze) killEnemy(e, true);
       }
@@ -173,7 +174,7 @@ const Enemies = {
 
 // ============ 伤害结算 ============
 function allTargets() { const a = Enemies.list.filter(e => !e.dead); if (G.boss && G.boss.alive && G.boss.targetable) a.push(G.boss); return a; }
-function onScreen(e) { const sx = e.x - G.cam.x; return sx > -10 && sx < W + 10 && e.y > -10 && e.y < H + 10; }
+function onScreen(e) { const sx = e.x - G.cam.x; const sy = e.y - G.cam.y; return sx > -10 && sx < W + 10 && sy > -10 && sy < H + 10; }
 function findTarget(x, y, range) {
   let best = null, bd = range * range;
   for (const e of allTargets()) { if (!onScreen(e)) continue; const dd = d2(x, y, e.x, e.y); if (dd < bd) { bd = dd; best = e; } }
