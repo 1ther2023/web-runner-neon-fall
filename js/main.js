@@ -205,43 +205,36 @@ function update(rdt) {
 }
 
 // ============ 渲染 ============
+// 叠加层分辨率跟随显示尺寸（HUD 清晰）
+function fitOverlay() {
+  const r = cv.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.max(W, Math.round(r.width * d)), h = Math.round(w * H / W);
+  if (cv.width !== w) { cv.width = w; cv.height = h; }
+}
+window.addEventListener('resize', fitOverlay); fitOverlay();
+
 function render() {
-  const cx = G.cam.x;
-  ctx.save();
-  if (G.shake > 0) ctx.translate(Math.round(rand(-G.shake, G.shake)), Math.round(rand(-G.shake, G.shake)));
-  BG.draw(ctx, cx, G.time, G.cam.y);
-  ctx.save(); ctx.translate(0, -Math.round(G.cam.y));
-  World.draw(ctx, cx, G.time);
-  FX.drawBack(ctx, cx);
-  if (G.state !== 'title') {
-    Pickups.draw(ctx, cx);
-    Enemies.draw(ctx, cx);
-    if (G.boss) G.boss.draw(ctx, cx);
-    Skills.draw(ctx, cx);
-    Bombs.draw(ctx, cx);
-    Player.draw(ctx, cx);
-    Shots.draw(ctx, cx);
-    Lasers.draw(ctx, cx);
-    EB.draw(ctx, cx);
-  }
-  FX.draw(ctx, cx);
-  ctx.restore();
-  BG.drawAbyss(ctx, cx, G.time);
-  if (G.state !== 'title') drawTide(ctx);
-  ctx.save(); ctx.translate(0, -Math.round(G.cam.y));
-  FX.drawTexts(ctx, cx);
-  ctx.restore();
+  const k = cv.width / W;
+  ctx.setTransform(k, 0, 0, k, 0, 0); ctx.clearRect(0, 0, W, H);
+  const shx = G.shake > 0 ? rand(-G.shake, G.shake) : 0, shy = G.shake > 0 ? rand(-G.shake, G.shake) : 0;
+  if (window.R3D) R3D.render(shx, shy);
+  else { ctx.fillStyle = '#07040d'; ctx.fillRect(0, 0, W, H); drawText(ctx, 'LOADING 3D...', W / 2, H / 2, '#fff', 2, 'center'); return; }
+  ctx.save(); ctx.translate(shx, shy - G.cam.y);
+  FX.drawTexts(ctx, G.cam.x);
   ctx.restore();
 
   // 速度线
   const sp = Math.hypot(Player.vx, Player.vy);
   if (G.state === 'play' && sp > 230) {
-    ctx.globalAlpha = Math.min(.5, (sp - 230) / 200); ctx.fillStyle = '#fff';
-    for (let i = 0; i < 8; i++) { const y = randi(0, H), l = randi(20, 60); ctx.fillRect(randi(0, W), y, l, 1); }
+    ctx.globalAlpha = Math.min(.35, (sp - 230) / 300); ctx.fillStyle = '#fff';
+    for (let i = 0; i < 8; i++) { const y = rand(0, H), l = rand(20, 70); ctx.fillRect(rand(0, W), y, l, .4); }
     ctx.globalAlpha = 1;
   }
-  if (G.ultT > 0) { ctx.globalAlpha = .12 + Math.sin(G.time * 30) * .05; ctx.fillStyle = '#ff2030'; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
-  if (G.flash > 0) { ctx.globalAlpha = Math.min(1, G.flash) * .6; ctx.fillStyle = G.flashColor; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
+  // 暗角
+  const vg = ctx.createRadialGradient(W / 2, H / 2, H * .45, W / 2, H / 2, W * .62);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.45)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+  if (G.ultT > 0) { ctx.globalAlpha = .1 + Math.sin(G.time * 30) * .04; ctx.fillStyle = '#ff2030'; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
+  if (G.flash > 0) { ctx.globalAlpha = Math.min(1, G.flash) * .5; ctx.fillStyle = G.flashColor; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
   if (G.state !== 'title') { drawHUD(ctx); drawCursor(ctx); }
 }
 
@@ -284,7 +277,7 @@ function drawHUD(c) {
   if (P.alive && G.started && !P.hands.some(h => h.rope && h.rope.state === 'stuck') && (G.time * 8 | 0) % 2) drawText(c, 'FALLING!', 36, 24, '#ff3040');
   // 右上：距离 / 金币
   drawText(c, Math.floor(G.dist) + 'M', W - 6, 5, '#fff', 2, 'right');
-  c.drawImage(SPR.coin.c, W - 12 - textW(String(G.coins), 1) - 6, 17);
+  { const cx0 = W - 10 - textW(String(G.coins), 1) - 4; c.fillStyle = '#a06000'; c.beginPath(); c.arc(cx0, 19.5, 3, 0, 7); c.fill(); c.fillStyle = '#ffd23a'; c.beginPath(); c.arc(cx0, 19.5, 2.2, 0, 7); c.fill(); }
   drawText(c, G.coins, W - 6, 17, '#ffd23a', 1, 'right');
   const tt = Math.floor(G.runTime), over = Diff.over();
   drawText(c, Math.floor(tt / 60) + ':' + String(tt % 60).padStart(2, '0'), W / 2, 5, over > 1 ? '#ff3040' : '#fff', 2, 'center');

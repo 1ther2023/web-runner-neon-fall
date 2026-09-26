@@ -302,15 +302,17 @@ function addStorm(v) {
 function ultimate() {
   if (G.energy < 100 || !Player.alive) return;
   G.energy = 0; G.ultT = 3.2 + Stats.ultDur; const P = Player;
-  Sfx.play('ult'); slowMo(.35, .7); addShake(12); screenFlash(.9, '#ff2030'); hitStop(.08);
+  Sfx.play('ult'); slowMo(.35, .7); addShake(12); screenFlash(.45, '#ff2030'); hitStop(.08);
   UI.banner('万丝风暴！', 'SPIDER STORM', 1.2);
   EB.clear(true); Lasers.reset();
   for (let i = 0; i < 3; i++) FX.ring(P.x, P.y, 4, 120 + i * 80, .5 + i * .2, i % 2 ? '#ff3040' : '#fff', 2);
   for (let i = 0; i < 24; i++) { const a = i / 24 * TAU; FX.bolt(P.x, P.y, P.x + Math.cos(a) * 160, P.y + Math.sin(a) * 160, i % 2 ? '#ffffff' : '#ff5a6a'); }
   const base = (40 + G.level * 8) * (1 + Stats.ultDmg);
+  G.ultBurst = true;
   for (const e of allTargets()) {
     if (!onScreen(e)) continue;
     FX.bolt(P.x, P.y, e.x, e.y, '#fff');
     damageEnemy(e, e.isBoss ? Math.min(e.maxHp * .1, base * 2) : base * 3 * Diff.hp(), true);
   }
+  G.ultBurst = false;
 }

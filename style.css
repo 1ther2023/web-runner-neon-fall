@@ -1,8 +1,9 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;background:#07040d;overflow:hidden;user-select:none;-webkit-user-select:none}
-body{display:flex;align-items:center;justify-content:center;font-family:"Press Start 2P","Microsoft YaHei","PingFang SC",monospace;color:#fff}
+body{display:flex;align-items:center;justify-content:center;font-family:"Orbitron","Microsoft YaHei","PingFang SC",monospace;color:#fff}
 #wrap{position:relative;width:min(100vw,calc(100vh*16/9));height:min(100vh,calc(100vw*9/16));box-shadow:0 0 60px #ff204055}
-#game{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges;cursor:none;background:#000}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block;background:#000}
+#game{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:none;background:transparent}
 #ui{position:absolute;inset:0;pointer-events:none;font-size:clamp(9px,1.35vw,15px)}
 .screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:1.1em;pointer-events:auto;background:radial-gradient(ellipse at center,#1a0820dd 0%,#050208f2 75%);text-align:center;padding:2em}
 .screen.show{display:flex}
@@ -17,7 +18,7 @@ body{display:flex;align-items:center;justify-content:center;font-family:"Press S
 .c-red{color:#ff4050!important}.c-venom{color:#b070ff!important}
 .howto{border:3px solid #ff2a3c;box-shadow:4px 4px 0 #4ad8ff;padding:.9em 1.4em;line-height:2.1;font-size:.78em;font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:#0c0414cc}
 kbd{background:#ffd23a;color:#200;padding:.1em .45em;border-bottom:3px solid #a06000;font-family:inherit;font-weight:bold}
-.btn{pointer-events:auto;font-family:"Press Start 2P","Microsoft YaHei",monospace;font-size:1.25em;padding:.8em 1.8em;background:#ff2a3c;color:#fff;border:none;box-shadow:0 6px 0 #7a0012,6px 6px 0 #4ad8ff;cursor:pointer;letter-spacing:.1em}
+.btn{pointer-events:auto;font-family:"Orbitron","Microsoft YaHei",monospace;font-size:1.25em;padding:.8em 1.8em;background:#ff2a3c;color:#fff;border:none;box-shadow:0 6px 0 #7a0012,6px 6px 0 #4ad8ff;cursor:pointer;letter-spacing:.1em}
 .btn:hover{background:#ff5060;transform:translateY(-2px)}
 .btn:active{transform:translateY(4px);box-shadow:0 2px 0 #7a0012}
 .best{color:#ffd23a;font-size:.75em}
@@ -33,13 +34,13 @@ kbd{background:#ffd23a;color:#200;padding:.1em .45em;border-bottom:3px solid #a0
 .card .tp{font-size:.7em;padding:.2em .6em;background:#ff2a3c;color:#fff}
 .card .tp.summon{background:#b070ff}.card .tp.passive{background:#2a9a5a}
 .card .ds{font-size:.82em;color:#cbb8e0;line-height:1.6}
-.card .lv{margin-top:auto;font-size:.75em;color:#ffd23a;font-family:"Press Start 2P",monospace}
-.card .key{font-family:"Press Start 2P";font-size:.7em;color:#666}
+.card .lv{margin-top:auto;font-size:.75em;color:#ffd23a;font-family:"Orbitron",monospace}
+.card .key{font-family:"Orbitron";font-size:.7em;color:#666}
 .over-title{font-size:2.6em;color:#ff2a3c;font-family:"Microsoft YaHei",sans-serif;font-weight:900;text-shadow:4px 4px 0 #300}
 .over-sub{color:#bbb;font-size:.8em;font-family:"Microsoft YaHei",sans-serif}
 .tally{border-collapse:collapse;font-size:.8em;min-width:28em}
-.tally td{padding:.45em .8em;border-bottom:2px dashed #3a2050;text-align:left;font-family:"Microsoft YaHei","Press Start 2P",sans-serif}
-.tally td.v{text-align:right;color:#4ad8ff;font-family:"Press Start 2P",monospace}
+.tally td{padding:.45em .8em;border-bottom:2px dashed #3a2050;text-align:left;font-family:"Microsoft YaHei","Orbitron",sans-serif}
+.tally td.v{text-align:right;color:#4ad8ff;font-family:"Orbitron",monospace}
 .tally tr.total td{color:#ffd23a;font-size:1.25em;border-bottom:none;padding-top:.8em}
 .tally tr.total td.v{color:#ffd23a}
 .rank{font-size:3.5em;color:#ffd23a;text-shadow:5px 5px 0 #ff2a3c;animation:pulse 1s infinite steps(2)}
@@ -54,11 +55,11 @@ kbd{background:#ffd23a;color:#200;padding:.1em .45em;border-bottom:3px solid #a0
 .slot.eq{border-color:#2a9a5a}
 .slot.empty{border-style:dashed;border-color:#ffffff33;background:#00000055}
 .slot span{font-size:1.35em;line-height:1}
-.slot b{position:absolute;bottom:-.2em;right:-.1em;font-family:"Press Start 2P",monospace;font-size:.5em;color:#fff;background:#000;padding:0 .15em}
+.slot b{position:absolute;bottom:-.2em;right:-.1em;font-family:"Orbitron",monospace;font-size:.5em;color:#fff;background:#000;padding:0 .15em}
 .slot.max{border-color:#ffd23a;box-shadow:0 0 8px #ffd23a}
 .slot.max b{color:#ffd23a}
 
-.slot i{position:absolute;top:-.25em;left:-.15em;font-style:normal;font-family:"Press Start 2P",monospace;font-size:.5em;background:#ffd23a;color:#000;padding:0 .2em}
+.slot i{position:absolute;top:-.25em;left:-.15em;font-style:normal;font-family:"Orbitron",monospace;font-size:.5em;background:#ffd23a;color:#000;padding:0 .2em}
 .card.route{width:15em}
 .card.route.r0{border-color:#ff5a6a}.card.route.r1{border-color:#b070ff}.card.route.r2{border-color:#2a9a5a}
 .card .ds b{font-weight:900}

@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>蛛影疾驰 WEB RUNNER · 霓虹坠城</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div id="wrap">
+  <canvas id="gl"></canvas>
   <canvas id="game" width="480" height="270"></canvas>
   <div id="ui">
     <!-- 标题 -->
@@ -65,5 +66,7 @@
 <script src="js/bosses.js"></script>
 <script src="js/skills.js"></script>
 <script src="js/main.js"></script>
+<script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js" } }</script>
+<script type="module" src="js/r3d/main3d.js"></script>
 </body>
 </html>

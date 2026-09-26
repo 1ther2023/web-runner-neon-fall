@@ -172,19 +172,16 @@ const FONT = {
   '>': '100010001010100', '(': '010100100100010', ')': '010001001001010', '#': '101111101111101',
   '*': '000101010101000', '=': '000111000111000', ',': '000000000010100', ' ': '000000000000000',
 };
-function textW(s, sc) { return String(s).length * 4 * sc - sc; }
+const HUDFONT = '"Rajdhani","Orbitron","Microsoft YaHei","PingFang SC",sans-serif';
+const _twc = document.createElement('canvas').getContext('2d');
+function fontFor(sc) { return '700 ' + (6.6 * sc).toFixed(2) + 'px ' + HUDFONT; }
+function textW(s, sc) { _twc.font = fontFor(sc || 1); return _twc.measureText(String(s).toUpperCase()).width; }
 function drawText(ctx, s, x, y, col, sc, align, shadow) {
   sc = sc || 1; s = String(s).toUpperCase();
-  if (align === 'center') x -= textW(s, sc) / 2; else if (align === 'right') x -= textW(s, sc);
-  x = Math.round(x); y = Math.round(y);
-  if (shadow !== false) drawTextRaw(ctx, s, x + sc, y + sc, shadow || '#000', sc);
-  drawTextRaw(ctx, s, x, y, col, sc);
-}
-function drawTextRaw(ctx, s, x, y, col, sc) {
-  ctx.fillStyle = col;
-  for (let i = 0; i < s.length; i++) {
-    const g = FONT[s[i]] || FONT[' '];
-    for (let p = 0; p < 15; p++) if (g.charCodeAt(p) === 49) ctx.fillRect(x + (p % 3) * sc, y + ((p / 3) | 0) * sc, sc, sc);
-    x += 4 * sc;
-  }
+  ctx.font = fontFor(sc); ctx.textBaseline = 'top';
+  ctx.textAlign = align === 'center' ? 'center' : align === 'right' ? 'right' : 'left';
+  y -= sc * .6;
+  if (shadow !== false) { ctx.fillStyle = shadow || 'rgba(0,0,0,.85)'; ctx.fillText(s, x + .5 * sc, y + .5 * sc); }
+  ctx.fillStyle = col; ctx.fillText(s, x, y);
+  ctx.textAlign = 'left';
 }

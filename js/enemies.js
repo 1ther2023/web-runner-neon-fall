@@ -197,7 +197,8 @@ function damageEnemy(e, dmg, crit, kvx, kvy) {
   dmg = Math.max(1, Math.round(dmg));
   e.hp -= dmg; e.flash = .07;
   if (!e.isBoss && kvx !== undefined) { const k = Math.hypot(kvx, kvy) || 1; e.x += kvx / k * 2; e.y += kvy / k * 2; }
-  FX.text(e.x + rand(-4, 4), e.y - (e.r || 16) - 4, crit ? dmg + '!' : dmg, crit ? '#ffe04a' : '#ffffff', crit ? 2 : 1);
+  if (!(G.ultT > 0 && G.ultBurst)) FX.text(e.x + rand(-4, 4), e.y - (e.r || 16) - 4, crit ? dmg + '!' : dmg, crit ? '#ffe04a' : '#ffffff', crit ? 2 : 1);
+  else FX.text(e.x + rand(-6, 6), e.y - (e.r || 16) - 4, dmg, '#ff9a9a', 1);
   Sfx.play(crit ? 'crit' : 'hit');
   if (crit) { addShake(1.5); }
   G.combo++; G.comboT = 2.2; G.maxCombo = Math.max(G.maxCombo, G.combo);
