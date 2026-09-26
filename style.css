@@ -1,0 +1,59 @@
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#07040d;overflow:hidden;user-select:none;-webkit-user-select:none}
+body{display:flex;align-items:center;justify-content:center;font-family:"Press Start 2P","Microsoft YaHei","PingFang SC",monospace;color:#fff}
+#wrap{position:relative;width:min(100vw,calc(100vh*16/9));height:min(100vh,calc(100vw*9/16));box-shadow:0 0 60px #ff204055}
+#game{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges;cursor:none;background:#000}
+#ui{position:absolute;inset:0;pointer-events:none;font-size:clamp(9px,1.35vw,15px)}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:1.1em;pointer-events:auto;background:radial-gradient(ellipse at center,#1a0820dd 0%,#050208f2 75%);text-align:center;padding:2em}
+.screen.show{display:flex}
+#pick{background:#050208b8}
+.logo{display:flex;flex-direction:column;align-items:center;gap:.35em}
+.logo .l1{font-size:3.4em;font-weight:900;letter-spacing:.12em;color:#ff2a3c;text-shadow:4px 4px 0 #2a0610,-2px -2px 0 #ffd23a,0 0 30px #ff2a3c;animation:pulse 1.2s infinite steps(2)}
+.logo .l2{font-size:1.6em;color:#4ad8ff;text-shadow:3px 3px 0 #0a1a50}
+.logo .l3{font-size:.9em;color:#ffcf4a;letter-spacing:.4em}
+@keyframes pulse{50%{text-shadow:4px 4px 0 #2a0610,-2px -2px 0 #4ad8ff,0 0 45px #ff2a3c}}
+.story{max-width:44em;line-height:1.9;font-size:.82em;color:#d8c8e8;font-family:"Microsoft YaHei","PingFang SC",sans-serif}
+.story b,.howto b{color:#ffd23a}
+.c-red{color:#ff4050!important}.c-venom{color:#b070ff!important}
+.howto{border:3px solid #ff2a3c;box-shadow:4px 4px 0 #4ad8ff;padding:.9em 1.4em;line-height:2.1;font-size:.78em;font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:#0c0414cc}
+kbd{background:#ffd23a;color:#200;padding:.1em .45em;border-bottom:3px solid #a06000;font-family:inherit;font-weight:bold}
+.btn{pointer-events:auto;font-family:"Press Start 2P","Microsoft YaHei",monospace;font-size:1.25em;padding:.8em 1.8em;background:#ff2a3c;color:#fff;border:none;box-shadow:0 6px 0 #7a0012,6px 6px 0 #4ad8ff;cursor:pointer;letter-spacing:.1em}
+.btn:hover{background:#ff5060;transform:translateY(-2px)}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #7a0012}
+.best{color:#ffd23a;font-size:.75em}
+.pick-title{font-size:1.6em;color:#ffd23a;text-shadow:3px 3px 0 #7a2000;font-family:"Microsoft YaHei",sans-serif;font-weight:900}
+.pick-hint{color:#aaa;font-size:.7em;font-family:"Microsoft YaHei",sans-serif}
+.cards{display:flex;gap:1.4em}
+.card{width:13em;min-height:17em;background:#120820;border:4px solid #4ad8ff;box-shadow:6px 6px 0 #000;padding:1em;display:flex;flex-direction:column;align-items:center;gap:.7em;cursor:pointer;transition:transform .08s;font-family:"Microsoft YaHei",sans-serif;animation:cardIn .35s backwards}
+.card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.16s}
+@keyframes cardIn{from{transform:translateY(40px) scale(.8);opacity:0}}
+.card:hover{transform:translateY(-8px) scale(1.04);border-color:#ffd23a;box-shadow:6px 6px 0 #ff2a3c}
+.card .ico{font-size:2.6em;line-height:1.2}
+.card .nm{font-size:1.15em;font-weight:900;color:#fff}
+.card .tp{font-size:.7em;padding:.2em .6em;background:#ff2a3c;color:#fff}
+.card .tp.summon{background:#b070ff}.card .tp.passive{background:#2a9a5a}
+.card .ds{font-size:.82em;color:#cbb8e0;line-height:1.6}
+.card .lv{margin-top:auto;font-size:.75em;color:#ffd23a;font-family:"Press Start 2P",monospace}
+.card .key{font-family:"Press Start 2P";font-size:.7em;color:#666}
+.over-title{font-size:2.6em;color:#ff2a3c;font-family:"Microsoft YaHei",sans-serif;font-weight:900;text-shadow:4px 4px 0 #300}
+.over-sub{color:#bbb;font-size:.8em;font-family:"Microsoft YaHei",sans-serif}
+.tally{border-collapse:collapse;font-size:.8em;min-width:28em}
+.tally td{padding:.45em .8em;border-bottom:2px dashed #3a2050;text-align:left;font-family:"Microsoft YaHei","Press Start 2P",sans-serif}
+.tally td.v{text-align:right;color:#4ad8ff;font-family:"Press Start 2P",monospace}
+.tally tr.total td{color:#ffd23a;font-size:1.25em;border-bottom:none;padding-top:.8em}
+.tally tr.total td.v{color:#ffd23a}
+.rank{font-size:3.5em;color:#ffd23a;text-shadow:5px 5px 0 #ff2a3c;animation:pulse 1s infinite steps(2)}
+#banner{position:absolute;left:0;right:0;top:36%;text-align:center;font-family:"Microsoft YaHei",sans-serif;font-weight:900;font-size:2.4em;color:#fff;text-shadow:4px 4px 0 #ff2a3c,-3px -3px 0 #000;opacity:0;transition:opacity .25s;pointer-events:none}
+#banner.show{opacity:1}
+#banner small{display:block;font-size:.42em;color:#ffd23a;margin-top:.4em;text-shadow:2px 2px 0 #000}
+.btn.small{font-size:.8em;padding:.6em 1.2em;background:#444;box-shadow:0 4px 0 #111}
+#hud{position:absolute;left:0;right:0;bottom:.5%;display:none;justify-content:space-between;padding:0 .6%;pointer-events:none}
+#hud.show{display:flex}
+#hud .bar{display:flex;gap:.3em}
+.slot{width:2.6em;height:2.6em;background:#0c0414cc;border:2px solid #4ad8ff;position:relative;display:flex;align-items:center;justify-content:center;font-size:1em}
+.slot.eq{border-color:#2a9a5a}
+.slot.empty{border-style:dashed;border-color:#ffffff33;background:#00000055}
+.slot span{font-size:1.35em;line-height:1}
+.slot b{position:absolute;bottom:-.2em;right:-.1em;font-family:"Press Start 2P",monospace;font-size:.5em;color:#fff;background:#000;padding:0 .15em}
+.slot.max{border-color:#ffd23a;box-shadow:0 0 8px #ffd23a}
+.slot.max b{color:#ffd23a}

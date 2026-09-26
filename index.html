@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>蛛影疾驰 WEB RUNNER · 霓虹坠城</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="wrap">
+  <canvas id="game" width="480" height="270"></canvas>
+  <div id="ui">
+    <!-- 标题 -->
+    <div id="title" class="screen show">
+      <div class="logo"><span class="l1">蛛影疾驰</span><span class="l2">WEB RUNNER</span><span class="l3">— 霓虹坠城 —</span></div>
+      <div class="story">
+        <p>2099 年，霓虹城。</p>
+        <p>名为<b class="c-venom">「黑潮」</b>的共生体从城市底层涌出，吞没了街道，只剩下摩天楼的骨架还亮着灯。</p>
+        <p>你是最后一个还在楼宇之间飞荡的人——<b class="c-red">蛛影</b>。</p>
+        <p>不能停。不能落地。一直向右，直到把黑潮的领主们全部击落。</p>
+      </div>
+      <div class="howto">
+        <div><kbd>鼠标左键</kbd> 左手蛛丝 &nbsp; <kbd>鼠标右键</kbd> 右手蛛丝</div>
+        <div>按住 = 向鼠标处发射并抓住蛛丝 &nbsp;|&nbsp; 松开 = 放手</div>
+        <div>单手抓住会<b>摆荡</b>，双手抓住会<b>吊挂</b>，<b class="c-red">两手都松开会坠落阵亡</b></div>
+        <div>攻击全自动 · 收集<b style="color:#4ad8ff">能量</b>升级学技能（5 槽 · Lv10 MAX）</div>
+        <div>击败<b>精英怪</b>掉落装备（6 槽） · 用<b>金币</b>强化装备（Lv4 MAX）</div>
+        <div>擦弹 / 击杀充能风暴，满后按 <kbd>空格</kbd> 释放「万丝风暴」 · <kbd>P</kbd> 暂停 <kbd>M</kbd> 静音</div>
+      </div>
+      <button id="btnStart" class="btn">▶ 开始飞荡</button>
+      <div class="best" id="bestLine"></div>
+    </div>
+    <!-- 技能选择 -->
+    <div id="pick" class="screen">
+      <div class="pick-title" id="pickTitle">金币突破！选择一项强化</div>
+      <div class="cards" id="cards"></div>
+      <div class="pick-hint">点击卡片或按 1 / 2 / 3</div>
+      <button id="skipBtn" class="btn small">暂不强化 [X]</button>
+    </div>
+    <!-- 结算 -->
+    <div id="over" class="screen">
+      <div class="over-title" id="overTitle">坠落阵亡</div>
+      <div class="over-sub" id="overSub"></div>
+      <table class="tally" id="tally"></table>
+      <div class="rank" id="rank">S</div>
+      <button id="btnRetry" class="btn">↻ 再来一次</button>
+    </div>
+    <!-- 暂停 -->
+    <div id="pause" class="screen">
+      <div class="over-title">暂停</div>
+      <div class="pick-hint">按 P / ESC 继续</div>
+    </div>
+    <div id="hud"><div class="bar" id="skSlots"></div><div class="bar" id="eqSlots"></div></div>
+    <div id="banner"></div>
+  </div>
+</div>
+<script src="js/core.js"></script>
+<script src="js/art.js"></script>
+<script src="js/world.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/player.js"></script>
+<script src="js/enemies.js"></script>
+<script src="js/bosses.js"></script>
+<script src="js/skills.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
