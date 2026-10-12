@@ -24,12 +24,14 @@ const Lasers = {
 
 // ============ BOSS ============
 const BOSSDEF = [
-  { id: 'vulture', name: '赤焰金乌', cn: '赤焰金乌 · 墨灾第一将', hp: 900, col: '#ff7a3a', pats: ['fan', 'feather', 'dive', 'fan', 'wingstorm'] },
-  { id: 'octo', name: '千机傀师', cn: '千机傀师 · 墨灾第二将', hp: 1150, col: '#c890ff', pats: ['spiral', 'rings', 'lasers', 'spiral', 'sweep'] },
-  { id: 'venom', name: '墨魇饕餮', cn: '墨魇饕餮 · 墨灾第三将', hp: 1400, col: '#ffcf4a', pats: ['flower', 'summon', 'wave', 'homing', 'flower'] },
-  { id: 'mantis', name: '刀螂将军', cn: '刀螂将军 · 墨灾第四将', hp: 1500, col: '#4ae0a0', pats: ['scythe', 'cross', 'dive', 'scythe', 'guillotine'] },
-  { id: 'hive', name: '金蜂娘娘', cn: '金蜂娘娘 · 墨灾第五将', hp: 1650, col: '#ffcf3a', pats: ['stinger', 'swarmCall', 'honey', 'stinger', 'hexstorm'] },
-  { id: 'ghost', name: '皮影判官', cn: '皮影判官 · 墨灾第六将', hp: 1800, col: '#ff6a5a', pats: ['grid', 'blink', 'glitch', 'grid', 'overflow'] },
+  { id: 'vulture', name: '铁翼隼「锋喙」', cn: '铁翼隼「锋喙」 · 第一位', hp: 900, col: '#ff7a3a', size: 104, pats: ['fan', 'feather', 'dive', 'fan', 'wingstorm'] },
+  { id: 'octo', name: '齿轮傀儡师', cn: '齿轮傀儡师 · 第二位', hp: 1150, col: '#7aff9a', size: 100, pats: ['spiral', 'rings', 'lasers', 'spiral', 'sweep'] },
+  { id: 'venom', name: '黑潮之王', cn: '黑潮之王 · 第三位', hp: 1400, col: '#b070ff', size: 112, pats: ['flower', 'summon', 'wave', 'homing', 'flower'] },
+  { id: 'mantis', name: '雨伞剑客', cn: '雨伞剑客 · 第四位', hp: 1500, col: '#ff3fa4', size: 84, pats: ['scythe', 'cross', 'dive', 'scythe', 'guillotine'] },
+  { id: 'hive', name: '蜂巢女王', cn: '蜂巢女王 · 第五位', hp: 1650, col: '#ffcf3a', size: 96, pats: ['stinger', 'swarmCall', 'honey', 'stinger', 'hexstorm'] },
+  { id: 'ghost', name: '全息幻影师', cn: '全息幻影师 · 第六位', hp: 1800, col: '#3fe0ff', size: 84, pats: ['grid', 'blink', 'glitch', 'grid', 'overflow'] },
+  { id: 'ring', name: '铁皮马戏团长', cn: '铁皮马戏团长 · 第七位', hp: 1950, col: '#5ab8ff', size: 90, pats: ['sweep', 'summon', 'rings', 'lasers', 'sweep'] },
+  { id: 'doom', name: '终焉蛛', cn: '终焉蛛 · 黑潮共主', hp: 2200, col: '#a050ff', size: 108, pats: ['homing', 'blink', 'flower', 'wingstorm', 'overflow'] },
 ];
 const BOSS_ORDER = BOSSDEF.length;
 function makeBoss() {
@@ -96,9 +98,9 @@ function bossDefeated(b) {
   Music.mode = 'normal';
   if (G.bosses >= BOSS_ORDER && G.endlessT == null) { // 全部 BOSS 击败 → 进入无尽
     G.endlessT = G.runTime; G.overAnnounced = true;
-    UI.banner('墨劫降临！', '全部将首已斩——敌人将无止境地变强', 3); Sfx.play('warn'); BG.build(3); return;
+    UI.banner('无尽黑潮！', '八位 BOSS 全部击败——敌人将无止境地变强', 3); Sfx.play('warn'); BG.build(3); return;
   }
-  UI.banner('将首已斩！', b.def.name + ' 坠入墨海' + (G.bosses === BOSS_ORDER - 1 ? ' · 最后一将即将到来！' : ''), 2.6);
+  UI.banner('BOSS 击破！', b.def.name + ' 坠入黑潮' + (G.bosses === BOSS_ORDER - 1 ? ' · 最后一将即将到来！' : ''), 2.6);
   BG.build(G.bosses % THEMES.length);
 }
 
