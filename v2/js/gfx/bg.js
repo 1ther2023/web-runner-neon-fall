@@ -2,13 +2,13 @@
 // ============ 场景美术：天空 / 远山云海 / 可挂钩楼阁 / 浮空灯舫 / 墨灾 ============
 // 章节配色：背景只用低饱和同类色，唯一高饱和的是屋脊“可挂钩”金线 edge
 const THEMES = [
-  { name: 'DUSK', cn: '第一章 · 暮云楼阙', sky: ['#2a1e4a', '#5a3466', '#a8506a', '#e8826a', '#f6c08a'], far: '#5a3a6a', mid: '#3a2650', fog: '#8a5a7a', hor: '#f6c08a',
+  { name: 'DUSK', cn: '第一章 · 霓虹街区', sky: ['#2a1e4a', '#5a3466', '#a8506a', '#e8826a', '#f6c08a'], far: '#5a3a6a', mid: '#3a2650', fog: '#8a5a7a', hor: '#f6c08a',
     bld: ['#4a3060', '#56345e', '#40285a', '#5a3a66'], wall: '#e8d8c0', edge: '#f2b544', win: ['#ffd27a', '#ff9a5a', '#fff0c0'], neon: ['#e8452c', '#f2b544', '#3fb8a8'], moon: '#fff0d0', sun: true },
-  { name: 'NIGHT', cn: '第二章 · 月下长街', sky: ['#0c1030', '#16204e', '#243474', '#3a4a8a', '#6a5a9a'], far: '#1e2a5a', mid: '#141c42', fog: '#34407a', hor: '#8a7ab0',
+  { name: 'NIGHT', cn: '第二章 · 雨夜高架', sky: ['#0c1030', '#16204e', '#243474', '#3a4a8a', '#6a5a9a'], far: '#1e2a5a', mid: '#141c42', fog: '#34407a', hor: '#8a7ab0',
     bld: ['#1e2650', '#242c58', '#1a2046', '#2a2e5e'], wall: '#b8c0d8', edge: '#7fd8ff', win: ['#ffcf6a', '#ff8a4a', '#ffe8b0'], neon: ['#e8452c', '#ffcf6a', '#7fd8ff'], moon: '#eef4ff' },
-  { name: 'JADE', cn: '第三章 · 翠微竹海', sky: ['#0e2426', '#1a4040', '#2e6a5a', '#6a9a6a', '#c8d89a'], far: '#1e4a44', mid: '#123430', fog: '#3a6a5a', hor: '#c8d89a',
+  { name: 'JADE', cn: '第三章 · 地下工厂', sky: ['#0e2426', '#1a4040', '#2e6a5a', '#6a9a6a', '#c8d89a'], far: '#1e4a44', mid: '#123430', fog: '#3a6a5a', hor: '#c8d89a',
     bld: ['#1e3a38', '#24443e', '#183430', '#2a4a3a'], wall: '#d0dcc0', edge: '#b8f07a', win: ['#f0e07a', '#ffb05a', '#e0ffd0'], neon: ['#e8452c', '#f0e07a', '#7fd8b0'], moon: '#f4ffe0' },
-  { name: 'INK', cn: '终章 · 墨劫天倾', sky: ['#0a0406', '#2a0a10', '#5a1418', '#9a2a1e', '#e0602a'], far: '#2a0e14', mid: '#18080c', fog: '#5a1a18', hor: '#e0602a',
+  { name: 'INK', cn: '终章 · 黑潮核心', sky: ['#0a0406', '#2a0a10', '#5a1418', '#9a2a1e', '#e0602a'], far: '#2a0e14', mid: '#18080c', fog: '#5a1a18', hor: '#e0602a',
     bld: ['#2c161c', '#341a20', '#241218', '#3a1c24'], wall: '#d8b8a8', edge: '#ff8a3a', win: ['#ff6a3a', '#ffcf6a', '#fff0e0'], neon: ['#e8452c', '#ffcf6a', '#ffffff'], moon: '#ff7a4a', sun: true },
 ];
 
