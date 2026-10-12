@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>钩影 · 云阙坠墨</title>
+<title>霓虹坠城 · 雨夜信使</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -14,22 +14,22 @@
   <div id="ui">
     <!-- 标题 -->
     <div id="title" class="screen show">
-      <div class="logo"><span class="l1">钩影</span><span class="l2">云 阙 坠 墨</span><span class="l3">GOUYING · FALL OF THE CLOUD CITY</span></div>
+      <div class="logo"><span class="l1">霓虹坠城</span><span class="l2">雨 夜 信 使</span><span class="l3">NEON FALL · THE RAIN COURIER</span></div>
       <div class="story">
-        <p>云阙城，悬于九天云海之上的楼阁之城。</p>
-        <p>一夜之间，<b class="c-venom">「墨灾」</b>从云海深处翻涌而上，染黑了长街，唤醒了城中的机关造物。</p>
-        <p>你是最后一位还在楼阁之间飞荡的钩影客——<b class="c-red">青鸢</b>。</p>
-        <p>不能停，不能坠。一路向东，斩尽墨灾六将。</p>
+        <p>2099 年，雨从未停过的霓虹城。</p>
+        <p>一夜之间，<b class="c-venom">「黑潮」</b>从城市底部翻涌而上，吞没街道，附身机械与帮派。</p>
+        <p>你是最后一位还在楼顶之间飞荡的兜帽信使，双手各握一把钩抓枪。</p>
+        <p>不能停，不能坠。一路向前，击破八位 BOSS。</p>
       </div>
       <div class="howto">
-        <div><kbd>鼠标左键</kbd> 左手钩索 &nbsp; <kbd>鼠标右键</kbd> 右手钩索</div>
-        <div>按住 = 向鼠标处掷出钩索并挂住 &nbsp;|&nbsp; 松开 = 放手</div>
-        <div>单手挂住会<b>摆荡</b>，双手挂住会<b>悬停</b>，<b class="c-red">两手都松开会坠入墨海</b></div>
-        <div>攻击全自动 · 收集<b style="color:#7fd8ff">灵气</b>升级学技能（5 槽 · Lv10 MAX）</div>
-        <div>击败<b>精英</b>掉落法宝（6 槽） · 用<b>金币</b>强化法宝（Lv4 MAX）</div>
-        <div>擦身 / 击杀积攒剑意，满后按 <kbd>空格</kbd> 释放「万剑归宗」 · <kbd>P</kbd> 暂停 <kbd>M</kbd> 静音</div>
+        <div><kbd>鼠标左键</kbd> 左手钩抓枪 &nbsp; <kbd>鼠标右键</kbd> 右手钩抓枪</div>
+        <div>按住 = 向鼠标处射出钩索并挂住 &nbsp;|&nbsp; 松开 = 放手</div>
+        <div>单手挂住会<b>摆荡</b>，双手挂住会<b>悬停</b>；画面自动向前卷动，<b class="c-red">掉出屏幕底部即坠亡</b></div>
+        <div>攻击全自动 · 收集<b style="color:#7fd8ff">能量</b>升级学技能（5 槽 · Lv10 MAX）</div>
+        <div>击败<b>精英</b>掉落装备（6 槽） · 用<b>金币</b>强化装备（Lv4 MAX）</div>
+        <div>擦身 / 击杀积攒能量，满后按 <kbd>空格</kbd> 释放大招 · <kbd>P</kbd> 暂停 <kbd>M</kbd> 静音</div>
       </div>
-      <button id="btnStart" class="btn">▶ 起 钩</button>
+      <button id="btnStart" class="btn">▶ 出 发</button>
       <div class="best" id="bestLine"></div>
     </div>
     <!-- 技能选择 -->
@@ -41,11 +41,11 @@
     </div>
     <!-- 结算 -->
     <div id="over" class="screen">
-      <div class="over-title" id="overTitle">坠入墨海</div>
+      <div class="over-title" id="overTitle">坠入黑潮</div>
       <div class="over-sub" id="overSub"></div>
       <table class="tally" id="tally"></table>
       <div class="rank" id="rank">S</div>
-      <button id="btnRetry" class="btn">↻ 再 战</button>
+      <button id="btnRetry" class="btn">↻ 再 来</button>
     </div>
     <!-- 暂停 -->
     <div id="pause" class="screen">
@@ -64,6 +64,7 @@
 <script src="js/gfx/bosses.js"></script>
 <script src="js/gfx/actors.js"></script>
 <script src="js/gfx/fx.js"></script>
+<script src="js/gfx/sprites.js"></script>
 <script src="js/world.js"></script>
 <script src="js/fx.js"></script>
 <script src="js/player.js"></script>
