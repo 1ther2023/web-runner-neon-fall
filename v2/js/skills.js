@@ -1,14 +1,14 @@
 'use strict';
 // ============ 装备（精英掉落，金币强化，Lv4 MAX） ============
 const EQUIPS = [
-  { id: 'suit', ico: '🥋', nm: '云锦劲装', ds: lv => '最大生命 +' + [20, 40, 65, 100][lv - 1] },
-  { id: 'armor', ico: '🛡️', nm: '玄铁护心镜', ds: lv => '受到伤害 -' + [8, 15, 22, 30][lv - 1] + '%' },
-  { id: 'helmet', ico: '🎭', nm: '灵犀面具', ds: lv => '暴击率 +' + [6, 12, 18, 25][lv - 1] + '%，暴伤 +' + [20, 40, 60, 90][lv - 1] + '%' },
-  { id: 'glove', ico: '🧤', nm: '纳气护腕', ds: lv => '拾取范围 +' + [40, 80, 120, 180][lv - 1] + '%，经验 +' + [10, 20, 30, 45][lv - 1] + '%' },
-  { id: 'charm', ico: '🧿', nm: '长生玉佩', ds: lv => '每秒额外回复 ' + [.4, .8, 1.2, 1.8][lv - 1] + ' 生命' },
-  { id: 'shooter', ico: '⚙️', nm: '连珠机括', ds: lv => '所有技能冷却 -' + [8, 15, 22, 30][lv - 1] + '%' },
-  { id: 'band', ico: '📿', nm: '虎魄念珠', ds: lv => '所有伤害 +' + [12, 25, 40, 60][lv - 1] + '%' },
-  { id: 'core', ico: '🏮', nm: '雷火灯芯', ds: lv => '剑意充能 +' + [25, 50, 80, 120][lv - 1] + '%，擦弹范围扩大' },
+  { id: 'suit', ico: '🧥', nm: '纳米防护服', ds: lv => '最大生命 +' + [20, 40, 65, 100][lv - 1] },
+  { id: 'armor', ico: '🛡️', nm: '复合装甲板', ds: lv => '受到伤害 -' + [8, 15, 22, 30][lv - 1] + '%' },
+  { id: 'helmet', ico: '🥽', nm: '战术目镜', ds: lv => '暴击率 +' + [6, 12, 18, 25][lv - 1] + '%，暴伤 +' + [20, 40, 60, 90][lv - 1] + '%' },
+  { id: 'glove', ico: '🧲', nm: '磁吸手套', ds: lv => '拾取范围 +' + [40, 80, 120, 180][lv - 1] + '%，经验 +' + [10, 20, 30, 45][lv - 1] + '%' },
+  { id: 'charm', ico: '💉', nm: '纳米修复核', ds: lv => '每秒额外回复 ' + [.4, .8, 1.2, 1.8][lv - 1] + ' 生命' },
+  { id: 'shooter', ico: '💾', nm: '超频芯片', ds: lv => '所有技能冷却 -' + [8, 15, 22, 30][lv - 1] + '%' },
+  { id: 'band', ico: '🔋', nm: '增幅模块', ds: lv => '所有伤害 +' + [12, 25, 40, 60][lv - 1] + '%' },
+  { id: 'core', ico: '⚡', nm: '聚能电池', ds: lv => '超载充能 +' + [25, 50, 80, 120][lv - 1] + '%，擦弹范围扩大' },
 ];
 const EQ_MAX = 4, EQ_SLOTS = 6, SK_MAX = 10, SK_SLOTS = 5;
 
@@ -38,7 +38,7 @@ const EQ_ROUTES = {
   charm: [
     { nm: '吸血', ds: k => '每次击杀回复 ' + [1, 2, 3][k - 1] + ' 生命', ap: (S, k) => { S.killHeal += [1, 2, 3][k - 1]; } },
     { nm: '狂怒', ds: k => '生命低于 50% 时伤害 +' + pct([.2, .4, .7][k - 1]), ap: (S, k) => { S.lowHpDmg += [.2, .4, .7][k - 1]; } },
-    { nm: '涅槃', ds: k => '战斗阵亡时复活一次，恢复 ' + pct([.3, .5, .8][k - 1]) + ' 生命', ap: (S, k) => { S.revive = [.3, .5, .8][k - 1]; } },
+    { nm: '紧急重启', ds: k => '战斗阵亡时复活一次，恢复 ' + pct([.3, .5, .8][k - 1]) + ' 生命', ap: (S, k) => { S.revive = [.3, .5, .8][k - 1]; } },
   ],
   shooter: [
     { nm: '超频', ds: k => '技能冷却额外 -' + pct([.06, .12, .2][k - 1]), ap: (S, k) => { S.cdMul -= [.06, .12, .2][k - 1]; } },
@@ -51,9 +51,9 @@ const EQ_ROUTES = {
     { nm: '处决', ds: k => '普通敌人生命低于 ' + pct([.15, .25, .4][k - 1]) + ' 时直接处决', ap: (S, k) => { S.execute = [.15, .25, .4][k - 1]; } },
   ],
   core: [
-    { nm: '聚意', ds: k => '剑意充能额外 +' + pct([.3, .6, 1][k - 1]), ap: (S, k) => { S.stormMul += [.3, .6, 1][k - 1]; } },
-    { nm: '延时', ds: k => '万剑归宗持续 +' + [1, 2, 3.5][k - 1] + ' 秒', ap: (S, k) => { S.ultDur += [1, 2, 3.5][k - 1]; } },
-    { nm: '余震', ds: k => '万剑归宗伤害 +' + pct([.4, .8, 1.5][k - 1]), ap: (S, k) => { S.ultDmg += [.4, .8, 1.5][k - 1]; } },
+    { nm: '聚能', ds: k => '超载充能额外 +' + pct([.3, .6, 1][k - 1]), ap: (S, k) => { S.stormMul += [.3, .6, 1][k - 1]; } },
+    { nm: '延时', ds: k => '霓虹超载持续 +' + [1, 2, 3.5][k - 1] + ' 秒', ap: (S, k) => { S.ultDur += [1, 2, 3.5][k - 1]; } },
+    { nm: '余震', ds: k => '霓虹超载伤害 +' + pct([.4, .8, 1.5][k - 1]), ap: (S, k) => { S.ultDmg += [.4, .8, 1.5][k - 1]; } },
   ],
 };
 const ROUTE_TAG = ['A', 'B', 'C'];
@@ -98,7 +98,7 @@ function recalcStats() {
 // ============ 技能（能量经验升级，Lv10 MAX） ============
 const cd = base => base * Stats.cdMul;
 const SKILLS = [
-  { id: 'web', ico: '✴️', nm: '云纹飞镖', ds: '自动向最近敌人掷出飞镖，高等级多发并穿透',
+  { id: 'web', ico: '🎯', nm: '钩刃镖', ds: '自动向最近敌人射出旋转钩刃，高等级多发并穿透',
     st: lv => ({ rate: 2.6 + lv * .28, n: 1 + Math.floor(lv / 3) + Stats.extraShot, dmg: 4 + lv * 1.3, pierce: lv >= 10 ? 2 : lv >= 5 ? 1 : 0 }),
     update(s, lv, dt) {
       const P = Player, S = this.st(lv); s.t -= dt;
@@ -121,7 +121,7 @@ const SKILLS = [
       for (let i = 0; i < S.n; i++) Shots.fire(P.x, P.y - 4, a + (i - (S.n - 1) / 2) * .12, S.dmg, { pierce: S.pierce });
       Sfx.play('shoot');
     } },
-  { id: 'orbit', ico: '🌀', nm: '绕身飞剑', ds: '飞剑环绕身体旋转，切割敌人并抵消子弹',
+  { id: 'orbit', ico: '💠', nm: '环身光刃', ds: '光刃环绕身体旋转，切割敌人并抵消子弹',
     st: lv => ({ n: [2, 2, 3, 3, 3, 4, 4, 4, 5, 6][lv - 1], dmg: 4 + lv * 1.6, r: 24 + lv * 1.2 }),
     pos(i, n, r) { const a = G.time * 4.2 + i * TAU / n; return [Player.x + Math.cos(a) * r, Player.y + Math.sin(a) * r]; },
     update(s, lv) {
@@ -133,7 +133,7 @@ const SKILLS = [
       }
     },
 },
-  { id: 'swarm', ico: '🐦', nm: '纸鹤追魂', ds: '周期放出一群自动追踪敌人的符纸鹤',
+  { id: 'swarm', ico: '🛸', nm: '追踪微弹', ds: '周期放出一群自动追踪敌人的微型飞弹',
     st: lv => ({ cd: 3.6 - lv * .16, n: 2 + lv, dmg: 5 + lv * 1.4 }),
     update(s, lv, dt) {
       const S = this.st(lv), P = Player; s.t -= dt;
@@ -141,7 +141,7 @@ const SKILLS = [
       s.t = cd(S.cd);
       for (let k = 0; k < S.n; k++) Shots.fire(P.x, P.y, rand(0, TAU), S.dmg, { col: '#ff5a6a', kind: 'mini', speed: 220, homing: 7, life: 1.8, pierce: 0 });
     } },
-  { id: 'claw', ico: '🪭', nm: '铁扇横扫', ds: '背后铁扇周期横扫周围敌人并清除子弹',
+  { id: 'claw', ico: '🌀', nm: '电弧回旋', ds: '周期释放回旋电弧，横扫周围敌人并清除子弹',
     st: lv => ({ cd: 2.4 - lv * .1, r: 40 + lv * 4, dmg: 10 + lv * 4 }),
     update(s, lv, dt) {
       const S = this.st(lv), P = Player; s.t -= dt; s.a = Math.max(0, (s.a || 0) - dt);
@@ -151,7 +151,7 @@ const SKILLS = [
       for (let j = EB.list.length - 1; j >= 0; j--) { const b = EB.list[j]; if (d2(P.x, P.y, b.x, b.y) < S.r * S.r) EB.list.splice(j, 1); }
     },
 },
-  { id: 'chain', ico: '🌩️', nm: '掌心雷', ds: '周期释放连锁雷法，在敌人间跳跃',
+  { id: 'chain', ico: '⚡', nm: '连锁电弧', ds: '周期释放电弧，在敌人之间连续跳跃',
     st: lv => ({ cd: 2.2 - lv * .1, jumps: 2 + Math.floor(lv / 2), dmg: 8 + lv * 3 }),
     update(s, lv, dt) {
       const S = this.st(lv), P = Player; s.t -= dt;
@@ -159,7 +159,7 @@ const SKILLS = [
       const t = findTarget(P.x, P.y, 220); if (!t) return;
       s.t = cd(S.cd); FX.bolt(P.x, P.y, t.x, t.y); damageEnemy(t, S.dmg, rollCrit()); chainZap(t, S.dmg * .8, S.jumps);
     } },
-  { id: 'bot', ico: '🪁', nm: '机关木鸢', ds: '召唤环绕你的机关木鸢自动射击',
+  { id: 'bot', ico: '🛰️', nm: '浮游炮台', ds: '召唤环绕你的浮游炮台自动射击',
     st: lv => ({ n: 1 + Math.floor(lv / 4), iv: .62 - lv * .025, dmg: 3 + lv * 1.1 }),
     pos(i, n) { const a = G.time * 2.2 + i * TAU / n; return [Player.x + Math.cos(a) * 18, Player.y - 8 + Math.sin(a) * 9]; },
     update(s, lv, dt) {
@@ -171,7 +171,7 @@ const SKILLS = [
       }
     },
 },
-  { id: 'cocoon', ico: '🧨', nm: '霹雳火球', ds: '向敌群投掷霹雳火球，落地大范围爆炸',
+  { id: 'cocoon', ico: '💣', nm: '等离子手雷', ds: '向敌群投掷等离子手雷，大范围爆炸',
     st: lv => ({ cd: 2.9 - lv * .12, n: 1 + Math.floor(lv / 4), r: 24 + lv * 2, dmg: 12 + lv * 4.5 }),
     update(s, lv, dt) {
       const S = this.st(lv), P = Player; s.t -= dt;
@@ -180,7 +180,7 @@ const SKILLS = [
       s.t = cd(S.cd);
       for (let i = 0; i < S.n; i++) { const t = pick(ts); Bombs.add(P.x, P.y, t.x, t.y, S.r, S.dmg); }
     } },
-  { id: 'beam', ico: '🔆', nm: '贯日剑气', ds: '凝聚剑意斩出贯穿一切的剑气',
+  { id: 'beam', ico: '🔦', nm: '霓虹激光', ds: '蓄能射出贯穿一切的霓虹激光',
     st: lv => ({ cd: 3.6 - lv * .16, w: 4 + Math.floor(lv / 3), dmg: 16 + lv * 6 }),
     update(s, lv, dt) {
       const S = this.st(lv), P = Player; s.t -= dt;
@@ -193,16 +193,16 @@ const SKILLS = [
       for (let j = EB.list.length - 1; j >= 0; j--) { const b = EB.list[j], px = b.x - P.x, py = b.y - P.y; if (px * dx + py * dy > 0 && Math.abs(px * dy - py * dx) < S.w / 2 + b.r + 3) { FX.spark(b.x, b.y, 3, b.col, 70, .2); EB.list.splice(j, 1); } }
       Sfx.play('laser'); addShake(3);
     } },
-  { id: 'nova', ico: '🌸', nm: '天女散花', ds: '向四面八方爆发一圈花瓣镖',
+  { id: 'nova', ico: '✨', nm: '霓虹散射', ds: '向四面八方爆发一圈霓虹弹',
     st: lv => ({ cd: 3.2 - lv * .13, n: 10 + lv * 2, dmg: 4 + lv * 1.3 }),
     update(s, lv, dt) {
       const S = this.st(lv), P = Player; s.t -= dt;
       if (s.t > 0 || !findTarget(P.x, P.y, 260)) return;
       s.t = cd(S.cd); const off = rand(0, TAU);
-      for (let i = 0; i < S.n; i++) Shots.fire(P.x, P.y, off + i / S.n * TAU, S.dmg, { col: '#ff9ad0', speed: 300, life: .7, pierce: 1 });
-      FX.ring(P.x, P.y, 3, 30, .25, '#ff9ad0'); Sfx.play('zap');
+      for (let i = 0; i < S.n; i++) Shots.fire(P.x, P.y, off + i / S.n * TAU, S.dmg, { col: '#ff3fa4', speed: 300, life: .7, pierce: 1 });
+      FX.ring(P.x, P.y, 3, 30, .25, '#ff3fa4'); Sfx.play('zap');
     } },
-  { id: 'sonic', ico: '💨', nm: '御风冲击', ds: '高速松钩时释放风压冲击波，粉碎周围子弹',
+  { id: 'sonic', ico: '💨', nm: '音爆冲击', ds: '高速松钩时释放音爆冲击波，粉碎周围子弹',
     st: lv => ({ r: 45 + lv * 5, dmg: 8 + lv * 3.5, cd: 1.6 - lv * .06 }),
     update(s, lv, dt) { s.t -= dt; },
     trigger(s, lv) {
@@ -270,7 +270,7 @@ function ultimate() {
   if (G.energy < 100 || !Player.alive) return;
   G.energy = 0; G.ultT = 3.2 + Stats.ultDur; const P = Player;
   Sfx.play('ult'); slowMo(.35, .7); addShake(12); screenFlash(.45, '#ff2030'); hitStop(.08);
-  UI.banner('万剑归宗！', '剑意 · 满', 1.2);
+  UI.banner('霓虹超载！', '全技能狂暴输出', 1.2);
   EB.clear(true); Lasers.reset();
   for (let i = 0; i < 3; i++) FX.ring(P.x, P.y, 4, 120 + i * 80, .5 + i * .2, i % 2 ? '#ff3040' : '#fff', 2);
   for (let i = 0; i < 24; i++) { const a = i / 24 * TAU; FX.bolt(P.x, P.y, P.x + Math.cos(a) * 160, P.y + Math.sin(a) * 160, i % 2 ? '#ffffff' : '#ff5a6a'); }
