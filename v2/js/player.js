@@ -99,7 +99,7 @@ const Player = {
       this.edgeT -= dt;
       if (this.edgeT <= 0) { this.edgeT = .35; this.hurt(3 + Diff.over() * 2, true); FX.spark(this.x, this.y, 8, '#b070ff', 120, .3); }
     }
-    if (this.y > H + 10) { this.die('坠入墨海', '掉出了屏幕底部……墨潮吞没了你'); return; }  // 掉出底边即死，抓着钩索也救不回
+    if (this.y > H + 10) { this.die('坠入黑潮', '掉出了屏幕底部……黑潮吞没了你'); return; }  // 掉出底边即死，抓着钩索也救不回
     // 姿态
     if (ropes.length) {
       let ax = 0, ay = 0; for (const r of ropes) { ax += r.ax; ay += r.ay; } ax /= ropes.length; ay /= ropes.length;
