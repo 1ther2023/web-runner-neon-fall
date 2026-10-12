@@ -130,9 +130,9 @@ const Player = {
     G.combo = 0;
     if (this.hp <= 0 && Stats.revive && !G.revived) {
       G.revived = true; this.hp = Math.round(this.maxHp * Stats.revive); this.inv = 2.5; EB.clear(false);
-      FX.ring(this.x, this.y, 4, 120, .6, '#ffd23a', 3); screenFlash(.8, '#ffd23a'); slowMo(.3, 1); UI.banner('涅槃重生！', '长生玉佩之力', 1.6); Sfx.play('levelup');
+      FX.ring(this.x, this.y, 4, 120, .6, '#ffd23a', 3); screenFlash(.8, '#ffd23a'); slowMo(.3, 1); UI.banner('紧急重启！', '纳米修复核启动', 1.6); Sfx.play('levelup');
     }
-    if (this.hp <= 0) { this.hp = 0; this.die('力竭阵亡', '青鸢力竭，坠入了墨海'); }
+    if (this.hp <= 0) { this.hp = 0; this.die('信号中断', '你倒在了霓虹雨夜里'); }
     return true;
   },
   heal(v) { const o = this.hp; this.hp = Math.min(this.maxHp, this.hp + v); if (this.hp - o >= 1) FX.text(this.x, this.y - 16, '+' + Math.round(this.hp - o), '#4aff8a'); },
