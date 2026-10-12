@@ -88,18 +88,19 @@ function drawHero(c, P, t) {
 
 // ---------- 敌人 ----------
 const EANIM = {
-  drone: { tilt: 1, bob: 1.6 }, thug: { wave: .9, waveFrom: .25, waveSpd: 5, breathe: .03 }, blob: { squash: .12, wave: 1, waveSpd: 7 },
+  drone: { tilt: 1, bob: 1.6 }, thug: { fly: 1, tilt: 1, bob: 2.2, wave: .9, waveFrom: .55, waveSpd: 11, grow: 1.25 }, blob: { squash: .12, wave: 1, waveSpd: 7 },
   eye: { spin: .15, pulse: .05, wave: 1.2, waveFrom: .55, waveSpd: 4 }, gunship: { tilt: 1, bob: 1 }, mine: { rot: 1.4, pulse: .04 },
   wasp: { flap: 3.5, flapSpd: 46, bob: 1.5 }, sniper: { flap: 4, flapSpd: 13, bob: 1.2 },
 };
 const ELANIM = {
-  thug: { wave: .8, waveFrom: .3, waveSpd: 4, breathe: .03 }, drone: { bob: 1.4, pulse: .03 }, wasp: { wave: .7, waveFrom: 0, waveSpd: 3, breathe: .02 },
+  thug: { fly: 1.4, tilt: 1, bob: 2.4, wave: 1, waveFrom: .6, waveSpd: 10, grow: 1.15 }, drone: { bob: 1.4, pulse: .03 }, wasp: { fly: 1.2, tilt: 1, bob: 2.6, wave: .8, waveFrom: .55, waveSpd: 8, grow: 1.1 },
   eye: { wave: 2.4, waveFrom: .45, waveSpd: 3.5, pulse: .04 }, sniper: { flap: 6, flapSpd: 9, bob: 1.4 }, gunship: { tilt: 1, bob: 1 },
 };
 const _born = new WeakMap();
 function enemyLook(e) {
   let n = 'en_' + e.type, size = e.r * (EN_SIZE[e.type] || 4.4), A = EANIM[e.type] || {};
   if (e.elite && SPR['el_' + e.type]) { n = 'el_' + e.type; size = e.r * 3.2; A = ELANIM[e.type] || {}; }
+  if (A.grow) size *= A.grow;
   return { n, size, A };
 }
 function drawEnemies(c, t) {
@@ -116,12 +117,22 @@ function drawEnemies(c, t) {
     const kx = (P.x > e.x ? -1 : 1) * hit * 2;
     let rot = 0, sx = 1, sy = 1, dy = 0;
     if (A.bob) dy += Math.sin(t * 3 + ph) * A.bob;
-    if (A.tilt) rot += clamp((e.vx || 0) * -.003, -.25, .25) + Math.sin(t * 2 + ph) * .06;
+    if (A.tilt) rot += clamp((e.vx || 0) * -.003, -.25, .25) + clamp((e.vy || 0) * .003, -.2, .2) * (flip ? -1 : 1) + Math.sin(t * 2 + ph) * .06;
+    if (A.fly) { rot += Math.sin(t * 1.4 + ph) * .1; dy += Math.sin(t * 2.6 + ph) * 1.2; }
     if (A.spin) rot += Math.sin(t * 1.3 + ph) * A.spin;
     if (A.rot) rot += t * A.rot;
     if (A.squash) { const q = Math.sin(t * 6 + ph) * A.squash; sx += q; sy -= q; }
     if (A.breathe) { const q = Math.sin(t * 2.4 + ph) * A.breathe; sy += q; sx -= q * .5; }
     if (A.pulse) { const q = Math.sin(t * 5 + ph) * A.pulse; sx += q; sy += q; }
+    if (A.fly) {  // 飞行：身后速度线 + 喷口光
+      const dir = flip ? -1 : 1, bx = e.x + dir * size * .32, by = e.y + dy - size * .12;
+      c.save(); c.globalCompositeOperation = 'lighter';
+      for (let k = 0; k < 4; k++) { const yy = e.y + dy + (k - 1.5) * size * .14, ln = size * (.35 + ((t * 3 + k * .37 + ph) % 1) * .4); c.globalAlpha = .18 + (k % 2) * .1; line(c, bx, yy, bx + dir * ln, yy + (k - 1.5) * 1.2, k % 2 ? '#3fe0ff' : '#ffffff', .5); }
+      const fl = 1 + Math.sin(t * 40 + ph) * .25, gr = c.createRadialGradient(bx, by, 0, bx, by, size * .22 * fl * A.fly);
+      gr.addColorStop(0, 'rgba(255,255,255,.8)'); gr.addColorStop(.4, e.elite ? 'rgba(255,120,200,.5)' : 'rgba(63,224,255,.5)'); gr.addColorStop(1, 'rgba(63,224,255,0)');
+      c.globalAlpha = 1; c.fillStyle = gr; c.beginPath(); circ(c, bx, by, size * .22 * fl * A.fly); c.fill(); c.restore();
+      if (Math.random() < .35) FX.p(bx, by, dir * rand(60, 120), rand(-15, 15), rand(.15, .3), e.elite ? '#ff7ad0' : '#3fe0ff', rand(.8, 1.6), 'line');
+    }
     const jit = charging ? Math.sin(t * 60) * .8 : 0;
     c.save(); c.translate(e.x + kx + jit, e.y + dy); c.rotate(rot); c.scale(sx * pop * (1 + hit * .12), sy * pop * (1 - hit * .06));
     const ok = sprAnim(c, n, size, { flip, ph, flash: hit * .75, aura: charging ? '#ff3060' : e.elite ? '#ffb347' : null, auraA: charging ? .5 + Math.sin(t * 30) * .2 : .35,
