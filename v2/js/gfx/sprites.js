@@ -7,7 +7,7 @@ const SPR_LIST = ['hero_swing', 'hero_double', 'hero_fall', 'hero_idle',
   'en_drone', 'en_thug', 'en_blob', 'en_eye', 'en_gunship', 'en_mine', 'en_wasp', 'en_sniper',
   'el_thug', 'el_drone', 'el_wasp', 'el_eye', 'el_sniper', 'el_gunship',
   'bs_vulture', 'bs_octo', 'bs_venom', 'bs_mantis', 'bs_hive', 'bs_ghost', 'bs_ring', 'bs_doom', 'bg_mid'];
-for (const n of SPR_LIST) { const im = new Image(); im.src = 'art/' + n + '.png'; SPR[n] = im; }
+for (const n of SPR_LIST) { const im = new Image(); im.src = 'art/' + n + '.webp'; SPR[n] = im; }
 SPR.bg_far = new Image(); SPR.bg_far.src = 'art/bg_far.jpg';
 const sprOk = im => im && im.complete && im.naturalWidth > 0;
 
