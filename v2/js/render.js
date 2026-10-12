@@ -94,7 +94,7 @@ function drawOffscreen(c, P, t) {
   const y = sy < 0 ? 10 : H - 12, x = clamp(sx, 12, W - 12), up = sy < 0 ? -1 : 1;
   c.save(); c.translate(x, y + Math.sin(t * 10) * 1.2);
   flat(c, q => poly(q, [0, up * 6, -5, -up * 2, 5, -up * 2]), '#ff3a4a', 1);
-  comic(c, Math.round(Math.abs(sy < 0 ? sy : sy - H) / 10) + '丈', 0, -up * 8, 6, '#fff', 'center', { thin: true, noDrop: true });
+  comic(c, Math.round(Math.abs(sy < 0 ? sy : sy - H) / 10) + 'M', 0, -up * 8, 6, '#fff', 'center', { thin: true, noDrop: true });
   c.restore();
 }
 function drawUltFrame(c, t) {
@@ -134,10 +134,10 @@ function drawHUD(c) {
   comic(c, Math.ceil(P.hp) + '', 124, 12.6, 8, '#ffffff', 'left', { thin: true, noDrop: true });
   plain(c, '/' + P.maxHp, 124 + textW2(Math.ceil(P.hp) + '', 8), 13.3, 4.6, '#b8a8cc');
   gauge(c, 33, 19, 70, 3.6, G.xp / xpNeed(G.level), '#3fb8a8', '#10283a');
-  comic(c, '境 ' + G.level, 107, 21, 6, '#7fd8ff', 'left', { thin: true, noDrop: true });
+  comic(c, 'LV ' + G.level, 107, 21, 6, '#7fd8ff', 'left', { thin: true, noDrop: true });
   const full = G.energy >= 100;
   gauge(c, 33, 26, 70, 3.6, G.energy / 100, full ? '#f2b544' : '#e8452c', '#300a14', full && (t * 10 | 0) % 2);
-  comic(c, full ? '空格!' : '剑意', 107, 28, 6, full ? '#f2b544' : '#ff9a7a', 'left', { thin: true, noDrop: true });
+  comic(c, full ? '空格!' : '超载', 107, 28, 6, full ? '#f2b544' : '#ff9a7a', 'left', { thin: true, noDrop: true });
   // 双手
   P.hands.forEach((h, i) => {
     const x = 34 + i * 13, y = 32.5, st = h.rope ? h.rope.state : null;
@@ -145,18 +145,18 @@ function drawHUD(c) {
     comic(c, i ? 'R' : 'L', x + 5.5, y + 3.3, 5, st ? '#ffffff' : '#6a5a78', 'center', { thin: true, noDrop: true });
   });
   if (P.alive && G.started && !P.hands.some(h => h.rope && h.rope.state === 'stuck') && (t * 8 | 0) % 2) comic(c, '坠落!', 62, 35.5, 7, '#ff5a3a', 'left', { thin: true });
-  else plain(c, '身法 ' + (Math.hypot(P.vx, P.vy) / 10).toFixed(0) + ' 丈/息', 62, 35.4, 4.6, '#8ad8f0', 'left', true);
+  else plain(c, '速度 ' + (Math.hypot(P.vx, P.vy) / 10).toFixed(0) + ' M/S', 62, 35.4, 4.6, '#8ad8f0', 'left', true);
 
   // ---- 顶部中央：计时 / 章节 ----
   const tt = Math.floor(G.runTime), over = Diff.over();
   panel(c, W / 2 - 34, 3, 68, 22, 'rgba(27,22,51,.88)');
   comic(c, Math.floor(tt / 60) + ':' + String(tt % 60).padStart(2, '0'), W / 2, 12, 12, over > 1 ? '#ff3a4a' : '#ffffff', 'center', { thin: true, noDrop: true });
-  const ch = over > 1 ? '墨劫 ×' + over.toFixed(1) : BG.layers.T.cn;
+  const ch = over > 1 ? '黑潮强化 ×' + over.toFixed(1) : BG.layers.T.cn;
   plain(c, ch, W / 2, 20.6, 4.6, over > 1 ? ((t * 4 | 0) % 2 ? '#ff3a4a' : '#ffe04a') : '#c8b0e0', 'center', true);
 
   // ---- 右上：距离 / 金币 / BOSS ----
   panel(c, W - 96, 4, 92, 30, 'rgba(27,22,51,.88)');
-  comic(c, Math.floor(G.dist) + '丈', W - 10, 13, 12, '#ffffff', 'right', { thin: true, noDrop: true });
+  comic(c, Math.floor(G.dist) + 'M', W - 10, 13, 12, '#ffffff', 'right', { thin: true, noDrop: true });
   flat(c, q => ell(q, W - 86, 13, 3, 3.2), '#ffc83a', .8);
   flat(c, q => ell(q, W - 86.6, 12.4, .8, 1.4), '#fff6c0', 0);
   comic(c, G.coins + '', W - 80, 13.3, 8, '#ffd34a', 'left', { thin: true, noDrop: true });
@@ -170,7 +170,7 @@ function drawHUD(c) {
     const big = G.combo >= 50, col = big ? '#ff3a4a' : G.combo >= 20 ? '#ffe04a' : '#ffffff', pulse = G.comboT > 2.05 ? 1.15 : 1;
     c.save(); c.translate(W - 12, 50); c.rotate(-.06); c.scale(pulse, pulse);
     comic(c, G.combo + '', 0, 0, big ? 20 : 15, col, 'right');
-    comic(c, '连 斩', 0, big ? 12 : 10, 5.5, '#ffffff', 'right', { thin: true });
+    comic(c, '连 击', 0, big ? 12 : 10, 5.5, '#ffffff', 'right', { thin: true });
     c.restore();
   }
   // ---- BOSS 血条 ----
@@ -186,16 +186,16 @@ function drawHUD(c) {
     const a = (G.warnT * 4 | 0) % 2;
     c.fillStyle = a ? 'rgba(255,40,60,.85)' : 'rgba(11,6,18,.85)';
     for (const y of [0, H - 9]) { c.fillRect(0, y, W, 9); c.save(); c.beginPath(); c.rect(0, y, W, 9); c.clip(); c.fillStyle = a ? INK : '#ff3a4a'; for (let x = -20 + (G.time * 60 % 18); x < W; x += 18) { c.beginPath(); poly(c, [x, y + 9, x + 9, y, x + 14, y, x + 5, y + 9]); c.fill(); } c.restore(); }
-    if (a) { c.save(); c.translate(W / 2, 66); c.rotate(-.04); comic(c, '将 至!!', 0, 0, 24, '#ff5a3a', 'center', { cn: true }); c.restore(); }
+    if (a) { c.save(); c.translate(W / 2, 66); c.rotate(-.04); comic(c, 'BOSS!!', 0, 0, 24, '#ff3fa4', 'center', { cn: true }); c.restore(); }
   }
   if (G.state === 'resume') {
     c.fillStyle = 'rgba(11,6,18,.7)'; c.fillRect(0, H / 2 - 20, W, 36);
-    comic(c, '按住鼠标 继续飞荡', W / 2, H / 2 - 5, 12, (t * 3 | 0) % 2 ? '#ffffff' : '#ffe04a', 'center');
+    comic(c, '按住鼠标 继续摆荡', W / 2, H / 2 - 5, 12, (t * 3 | 0) % 2 ? '#ffffff' : '#ffe04a', 'center');
     plain(c, '按住鼠标继续 · 没有按住的那只手会松开钩索', W / 2, H / 2 + 9, 5.5, '#c8b8d8', 'center', true);
   }
   if (!G.started && P.alive) {
     c.save(); c.translate(W / 2, H * .72); c.rotate(-.03);
-    comic(c, '按住鼠标左键 / 右键 · 钩住屋檐', 0, 0, 10, (t * 3 | 0) % 2 ? '#ffffff' : '#ffe04a', 'center', { cn: true });
+    comic(c, '按住鼠标左键 / 右键 · 钩住楼顶', 0, 0, 10, (t * 3 | 0) % 2 ? '#ffffff' : '#ffe04a', 'center', { cn: true });
     c.restore();
   }
 }
