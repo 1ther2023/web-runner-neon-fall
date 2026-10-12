@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>钩影 · 云阙坠墨</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="wrap">
+  <canvas id="game" width="480" height="270"></canvas>
+  <div id="ui">
+    <!-- 标题 -->
+    <div id="title" class="screen show">
+      <div class="logo"><span class="l1">钩影</span><span class="l2">云 阙 坠 墨</span><span class="l3">GOUYING · FALL OF THE CLOUD CITY</span></div>
+      <div class="story">
+        <p>云阙城，悬于九天云海之上的楼阁之城。</p>
+        <p>一夜之间，<b class="c-venom">「墨灾」</b>从云海深处翻涌而上，染黑了长街，唤醒了城中的机关造物。</p>
+        <p>你是最后一位还在楼阁之间飞荡的钩影客——<b class="c-red">青鸢</b>。</p>
+        <p>不能停，不能坠。一路向东，斩尽墨灾六将。</p>
+      </div>
+      <div class="howto">
+        <div><kbd>鼠标左键</kbd> 左手钩索 &nbsp; <kbd>鼠标右键</kbd> 右手钩索</div>
+        <div>按住 = 向鼠标处掷出钩索并挂住 &nbsp;|&nbsp; 松开 = 放手</div>
+        <div>单手挂住会<b>摆荡</b>，双手挂住会<b>悬停</b>，<b class="c-red">两手都松开会坠入墨海</b></div>
+        <div>攻击全自动 · 收集<b style="color:#7fd8ff">灵气</b>升级学技能（5 槽 · Lv10 MAX）</div>
+        <div>击败<b>精英</b>掉落法宝（6 槽） · 用<b>金币</b>强化法宝（Lv4 MAX）</div>
+        <div>擦身 / 击杀积攒剑意，满后按 <kbd>空格</kbd> 释放「万剑归宗」 · <kbd>P</kbd> 暂停 <kbd>M</kbd> 静音</div>
+      </div>
+      <button id="btnStart" class="btn">▶ 起 钩</button>
+      <div class="best" id="bestLine"></div>
+    </div>
+    <!-- 技能选择 -->
+    <div id="pick" class="screen">
+      <div class="pick-title" id="pickTitle">金币突破！选择一项强化</div>
+      <div class="cards" id="cards"></div>
+      <div class="pick-hint">点击卡片或按 1 / 2 / 3</div>
+      <button id="skipBtn" class="btn small">暂不强化 [X]</button>
+    </div>
+    <!-- 结算 -->
+    <div id="over" class="screen">
+      <div class="over-title" id="overTitle">坠入墨海</div>
+      <div class="over-sub" id="overSub"></div>
+      <table class="tally" id="tally"></table>
+      <div class="rank" id="rank">S</div>
+      <button id="btnRetry" class="btn">↻ 再 战</button>
+    </div>
+    <!-- 暂停 -->
+    <div id="pause" class="screen">
+      <div class="over-title">暂停</div>
+      <div class="pick-hint">按 P / ESC 继续</div>
+    </div>
+    <div id="hud"><div class="bar" id="skSlots"></div><div class="bar" id="eqSlots"></div></div>
+    <div id="banner"></div>
+  </div>
+</div>
+<script src="js/core.js"></script>
+<script src="js/gfx/base.js"></script>
+<script src="js/gfx/bg.js"></script>
+<script src="js/gfx/hero.js"></script>
+<script src="js/gfx/enemies.js"></script>
+<script src="js/gfx/bosses.js"></script>
+<script src="js/gfx/actors.js"></script>
+<script src="js/gfx/fx.js"></script>
+<script src="js/world.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/player.js"></script>
+<script src="js/enemies.js"></script>
+<script src="js/bosses.js"></script>
+<script src="js/skills.js"></script>
+<script src="js/main.js"></script>
+<script src="js/render.js"></script>
+</body>
+</html>
