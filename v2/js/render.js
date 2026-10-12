@@ -160,8 +160,8 @@ function drawHUD(c) {
   flat(c, q => ell(q, W - 86, 13, 3, 3.2), '#ffc83a', .8);
   flat(c, q => ell(q, W - 86.6, 12.4, .8, 1.4), '#fff6c0', 0);
   comic(c, G.coins + '', W - 80, 13.3, 8, '#ffd34a', 'left', { thin: true, noDrop: true });
-  if (!G.boss) { const bl = Math.max(0, Math.ceil(G.nextBossT - G.runTime)); plain(c, '第' + '一二三四五六'[G.bosses % BOSS_ORDER] + '将 · ' + bl + '息', W - 10, 27, 5, '#f2b544', 'right', true); }
-  else plain(c, '已斩 ×' + G.bosses, W - 10, 27, 5, '#f2b544', 'right', true);
+  if (!G.boss) { const bl = Math.max(0, Math.ceil(G.nextBossT - G.runTime)); plain(c, 'BOSS ' + (G.bosses % BOSS_ORDER + 1) + ' · ' + bl + 's', W - 10, 27, 5, '#f2b544', 'right', true); }
+  else plain(c, '击破 ×' + G.bosses, W - 10, 27, 5, '#f2b544', 'right', true);
   // BOSS 进度点（本轮已击破的 BOSS）
   for (let i = 0; i < BOSS_ORDER; i++) flat(c, q => poly(q, [W - 92 + i * 5, 27, W - 90 + i * 5, 25, W - 88 + i * 5, 27, W - 90 + i * 5, 29]), i < G.bosses % BOSS_ORDER ? '#f2b544' : '#3a2a4a', .5);
 
