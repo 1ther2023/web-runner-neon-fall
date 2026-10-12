@@ -197,7 +197,7 @@ function damageEnemy(e, dmg, crit, kvx, kvy) {
   G.combo++; G.comboT = 2.2; G.maxCombo = Math.max(G.maxCombo, G.combo);
   if (e.isBoss) e.onHit(dmg);
   else if (e.hp <= 0) killEnemy(e);
-  else if (Stats.execute && !e.elite && e.hp < e.maxHp * Stats.execute) { FX.text(e.x, e.y - 12, '斩!', '#ff3040'); killEnemy(e); }
+  else if (Stats.execute && !e.elite && e.hp < e.maxHp * Stats.execute) { FX.text(e.x, e.y - 12, '处决!', '#ff3040'); killEnemy(e); }
 }
 function killEnemy(e, noReward) {
   if (e.dead) return; e.dead = true;
