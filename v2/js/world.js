@@ -1,6 +1,6 @@
 'use strict';
 // ============ 云阙城：可挂钩的楼阁与浮空灯舫 ============
-const SIGNS = ['酒', '茶', '当', '客栈', '面馆', '醉仙', '望月', '云阙', '镖局', '药铺', '听雨', '福'];
+const SIGNS = ['24H', 'NEON', '雨夜', '便利店', '霓虹', 'BAR', '旅馆', '拉面', '修理', '药局', 'HOTEL', 'OPEN'];
 const World = {
   blds: [], floats: [], genX: 0,
   reset() { this.blds = []; this.floats = []; this.genX = -60; this.gen(W + 600, true); },
