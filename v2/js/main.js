@@ -25,11 +25,11 @@ const UI = {
       if (!cards.length) { Player.heal(30); addCoins(20); FX.text(Player.x, Player.y - 20, '全满', '#ffe04a', 2); return false; }
     } else if (mode === 'chest') {
       if (Equip.owned.length < EQ_SLOTS) {
-        title = '精英战利品！选择一件装备';
+        title = '精英补给！选择一件装备';
         const pool = EQUIPS.filter(e => !Equip.lv(e.id));
         while (cards.length < 3 && pool.length) { const e = pool.splice(randi(0, pool.length - 1), 1)[0]; cards.push({ kind: 'equip', id: e.id, ico: e.ico, nm: e.nm, tp: '新装备', cls: 'passive', ds: e.ds(1), lvl: 'NEW · Lv1' }); }
       } else {
-        title = '精英战利品！免费强化一件装备';
+        title = '精英补给！免费强化一件装备';
         cards = this.upCards(true);
       }
       if (!cards.length) { addCoins(60); FX.text(Player.x, Player.y - 20, '+60', '#ffd23a', 2); return false; }
@@ -75,7 +75,7 @@ const UI = {
       else if (c.kind === 'equipUp' && Equip.get(c.id).route < 0) { this.openRoutes(c.id, c.free); return; }
       else if (c.kind === 'equipUp' || c.kind === 'route') { if (!c.free) { G.coins -= Equip.cost(); Equip.ups++; } Equip.up(c.id, c.route); }
       Sfx.play('pick');
-      FX.text(Player.x, Player.y - 24, '功力大增', '#ffe04a', 2);
+      FX.text(Player.x, Player.y - 24, '能力提升', '#ffe04a', 2);
       FX.ring(Player.x, Player.y, 4, 40, .4, '#ffe04a', 2);
     } else if (this.mode === 'upgrade' || this.mode === 'route') G.upSkipAt = G.coins + Equip.cost();
     this.hide('pick'); this.renderSlots();
@@ -103,12 +103,12 @@ function newGame() {
   [FX, Pickups, EB, Lasers, Enemies, Shots, Skills, Equip, Bombs].forEach(m => m.reset());
   Player.reset(); recalcStats(); Player.hp = Player.maxHp; G.startX = Player.x; G.state = 'play';
   UI.renderSlots(); UI.show('hud');
-  UI.banner('按住 鼠标左键 / 右键', '向楼阁掷出钩索，开始飞荡！', 3);
+  UI.banner('按住 鼠标左键 / 右键', '向楼顶射出钩索，开始摆荡！', 3);
   Music.mode = 'normal'; Music.start();
 }
 function startBoss() {
   G.boss = makeBoss(); G.warnT = 2.6; Music.mode = 'boss';
-  Sfx.play('warn'); UI.banner('⚠ 将 至 ⚠', G.boss.def.cn + ' 从后方追来！', 2.6);
+  Sfx.play('warn'); UI.banner('⚠ BOSS 接近 ⚠', G.boss.def.cn + ' 从后方追来！', 2.6);
 }
 function gameOver() {
   G.state = 'over'; Music.stop(); UI.hide('hud');
@@ -127,7 +127,7 @@ function gameOver() {
   const total = rows.reduce((a, r) => a + r[2], 0);
   const best = Math.max(total, +(localStorage.getItem('gouying_best') || 0));
   localStorage.setItem('gouying_best', best);
-  $('overTitle').textContent = Player.deadTitle || '阵亡';
+  $('overTitle').textContent = Player.deadTitle || '信号中断';
   $('overSub').textContent = Player.deadSub;
   $('tally').innerHTML = rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="v">+${r[2]}</td></tr>`).join('') +
     `<tr class="total"><td>总分</td><td>${total >= best ? 'NEW BEST!' : '最佳 ' + best}</td><td class="v">${total}</td></tr>`;
