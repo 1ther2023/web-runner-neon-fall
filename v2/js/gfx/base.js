@@ -16,7 +16,7 @@ const PAL = {
 const ART = { k: 1, gen: 0, flash: 0, tint: null, stk: 0, stkCol: '#fff' };
 // 数字 / 短标签字体（ZCOOL 庆科黄油体）；标题书法字体（马善政）
 const COMIC = '"ZCOOL QingKe HuangYou","Microsoft YaHei","PingFang SC",sans-serif';
-const BRUSH = '"Ma Shan Zheng","STXingkai","KaiTi","STKaiti",serif';
+const BRUSH = '"ZCOOL QingKe HuangYou","Microsoft YaHei","PingFang SC",sans-serif';
 const CNF = '"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif';
 
 function mkCv(w, h) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h)); return [c, c.getContext('2d')]; }
