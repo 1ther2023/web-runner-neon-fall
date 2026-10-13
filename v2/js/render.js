@@ -137,7 +137,7 @@ function drawHUD(c) {
   comic(c, 'LV ' + G.level, 107, 21, 6, '#7fd8ff', 'left', { thin: true, noDrop: true });
   const full = G.energy >= 100;
   gauge(c, 33, 26, 70, 3.6, G.energy / 100, full ? '#f2b544' : '#e8452c', '#300a14', full && (t * 10 | 0) % 2);
-  comic(c, full ? '空格!' : '超载', 107, 28, 6, full ? '#f2b544' : '#ff9a7a', 'left', { thin: true, noDrop: true });
+  comic(c, full ? '空格!' : '风暴', 107, 28, 6, full ? '#f2b544' : '#ff9a7a', 'left', { thin: true, noDrop: true });
   // 双手
   P.hands.forEach((h, i) => {
     const x = 34 + i * 13, y = 32.5, st = h.rope ? h.rope.state : null;
