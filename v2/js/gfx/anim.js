@@ -154,9 +154,9 @@ killEnemy = function (e, noReward) {
 
 // ---------- BOSS ----------
 const BANIM = {
-  vulture: { flap: 11, flapSpd: 5 }, octo: { wave: 2.2, waveFrom: .25, waveSpd: 3, bob: 2 }, venom: { wave: 4, waveFrom: 0, waveSpd: 2.4, squash: .04 },
-  mantis: { wave: 3, waveFrom: .45, waveSpd: 4, bob: 2.4 }, hive: { flap: 6, flapSpd: 32, bob: 2 }, ghost: { glitch: 4, bob: 3 },
-  ring: { bounce: 4, tilt: .08 }, doom: { flap: 5, flapSpd: 6, bob: 1.5 },
+  vulture: { flap: 11, flapSpd: 5 }, octo: { wave: 2.4, waveFrom: .35, waveSpd: 4, bob: 3, tilt: .05 }, venom: { wave: 4, waveFrom: 0, waveSpd: 2.4, squash: .04 },
+  mantis: { wave: 2.4, waveFrom: .3, waveSpd: 7, bob: 3, tilt: .06 }, hive: { flap: 7, flapSpd: 34, bob: 3, tilt: .05 }, ghost: { glitch: 3, wave: 3, waveFrom: .2, waveSpd: 5, bob: 4, tilt: .06 },
+  ring: { bob: 3.5, tilt: .1, wave: 1.2, waveFrom: .5, waveSpd: 14 }, doom: { flap: 5, flapSpd: 6, bob: 1.5 },
 };
 function drawBoss(c, b, t) {
   if (b.state === 'dying' && ((t * 20) | 0) % 2 && b.dying < 1) return;
