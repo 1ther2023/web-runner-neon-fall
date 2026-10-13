@@ -154,7 +154,7 @@ killEnemy = function (e, noReward) {
 
 // ---------- BOSS ----------
 const BANIM = {
-  vulture: { flap: 11, flapSpd: 5 }, octo: { wave: 2.4, waveFrom: .35, waveSpd: 4, bob: 3, tilt: .05 }, venom: { wave: 4, waveFrom: 0, waveSpd: 2.4, squash: .04 },
+  vulture: { flap: 11, flapSpd: 5 }, octo: { wave: 2.6, waveFrom: .45, waveSpd: 9, bob: 3.5, tilt: .05 }, venom: { wave: 4, waveFrom: 0, waveSpd: 2.4, squash: .04 },
   mantis: { wave: 2.4, waveFrom: .3, waveSpd: 7, bob: 3, tilt: .06 }, hive: { flap: 7, flapSpd: 34, bob: 3, tilt: .05 }, ghost: { glitch: 3, wave: 3, waveFrom: .2, waveSpd: 5, bob: 4, tilt: .06 },
   ring: { bob: 3.5, tilt: .1, wave: 1.2, waveFrom: .5, waveSpd: 14 }, doom: { flap: 5, flapSpd: 6, bob: 1.5 },
 };
