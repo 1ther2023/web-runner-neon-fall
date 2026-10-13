@@ -89,3 +89,12 @@ kbd{background:rgba(63,224,255,.12);color:var(--cyan);padding:.05em .5em;border:
 .slot.max{border-color:var(--amber);box-shadow:0 0 10px rgba(255,179,71,.45) inset}
 .slot.max b{color:var(--amber)}
 .slot i{position:absolute;top:0;left:.2em;font-style:normal;font-family:var(--en);font-size:.5em;color:var(--amber)}
+
+/* v0.6 暂停：可收起成角落小标签，方便截图 */
+.pause-btns{display:flex;gap:1em}
+#pauseMini{display:none}
+#pause.mini{background:none;pointer-events:none;animation:none}
+#pause.mini>*{display:none}
+#pause.mini #pauseMini{display:block;position:absolute;left:.6em;bottom:.6em;pointer-events:auto;cursor:pointer;font-size:.55em;letter-spacing:.1em;
+  color:rgba(255,255,255,.55);background:rgba(10,9,26,.45);border:1px solid rgba(63,224,255,.3);padding:.25em .7em;opacity:.45;transition:opacity .2s}
+#pause.mini #pauseMini:hover{opacity:1}
