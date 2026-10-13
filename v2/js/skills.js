@@ -8,7 +8,7 @@ const EQUIPS = [
   { id: 'charm', ico: '💉', nm: '纳米修复核', ds: lv => '每秒额外回复 ' + [.4, .8, 1.2, 1.8][lv - 1] + ' 生命' },
   { id: 'shooter', ico: '💾', nm: '超频芯片', ds: lv => '所有技能冷却 -' + [8, 15, 22, 30][lv - 1] + '%' },
   { id: 'band', ico: '🔋', nm: '增幅模块', ds: lv => '所有伤害 +' + [12, 25, 40, 60][lv - 1] + '%' },
-  { id: 'core', ico: '⚡', nm: '聚能电池', ds: lv => '超载充能 +' + [25, 50, 80, 120][lv - 1] + '%，擦弹范围扩大' },
+  { id: 'core', ico: '⚡', nm: '聚能电池', ds: lv => '风暴充能 +' + [25, 50, 80, 120][lv - 1] + '%，擦弹范围扩大' },
 ];
 const EQ_MAX = 4, EQ_SLOTS = 6, SK_MAX = 10, SK_SLOTS = 5;
 
@@ -51,9 +51,9 @@ const EQ_ROUTES = {
     { nm: '处决', ds: k => '普通敌人生命低于 ' + pct([.15, .25, .4][k - 1]) + ' 时直接处决', ap: (S, k) => { S.execute = [.15, .25, .4][k - 1]; } },
   ],
   core: [
-    { nm: '聚能', ds: k => '超载充能额外 +' + pct([.3, .6, 1][k - 1]), ap: (S, k) => { S.stormMul += [.3, .6, 1][k - 1]; } },
-    { nm: '延时', ds: k => '霓虹超载持续 +' + [1, 2, 3.5][k - 1] + ' 秒', ap: (S, k) => { S.ultDur += [1, 2, 3.5][k - 1]; } },
-    { nm: '余震', ds: k => '霓虹超载伤害 +' + pct([.4, .8, 1.5][k - 1]), ap: (S, k) => { S.ultDmg += [.4, .8, 1.5][k - 1]; } },
+    { nm: '聚能', ds: k => '风暴充能额外 +' + pct([.3, .6, 1][k - 1]), ap: (S, k) => { S.stormMul += [.3, .6, 1][k - 1]; } },
+    { nm: '延时', ds: k => '万丝风暴持续 +' + [1, 2, 3.5][k - 1] + ' 秒', ap: (S, k) => { S.ultDur += [1, 2, 3.5][k - 1]; } },
+    { nm: '余震', ds: k => '万丝风暴伤害 +' + pct([.4, .8, 1.5][k - 1]), ap: (S, k) => { S.ultDmg += [.4, .8, 1.5][k - 1]; } },
   ],
 };
 const ROUTE_TAG = ['A', 'B', 'C'];
@@ -269,16 +269,14 @@ function addStorm(v) {
 function ultimate() {
   if (G.energy < 100 || !Player.alive) return;
   G.energy = 0; G.ultT = 3.2 + Stats.ultDur; const P = Player;
-  Sfx.play('ult'); slowMo(.35, .7); addShake(12); screenFlash(.45, '#ff2030'); hitStop(.08);
-  UI.banner('霓虹超载！', '全技能狂暴输出', 1.2);
+  Sfx.play('ult'); slowMo(.35, .7); addShake(12); screenFlash(.35, '#3fe0ff'); hitStop(.08);
+  UI.banner('万丝风暴！', '千条钩索 · 锁定全场', 1.2);
   EB.clear(true); Lasers.reset();
-  for (let i = 0; i < 3; i++) FX.ring(P.x, P.y, 4, 120 + i * 80, .5 + i * .2, i % 2 ? '#ff3040' : '#fff', 2);
-  for (let i = 0; i < 24; i++) { const a = i / 24 * TAU; FX.bolt(P.x, P.y, P.x + Math.cos(a) * 160, P.y + Math.sin(a) * 160, i % 2 ? '#ffffff' : '#ff5a6a'); }
+  for (let i = 0; i < 3; i++) FX.ring(P.x, P.y, 4, 60 + i * 50, .35 + i * .12, i % 2 ? '#ffcf4a' : '#3fe0ff', 1.5);
   const base = (40 + G.level * 8) * (1 + Stats.ultDmg);
   G.ultBurst = true;
   for (const e of allTargets()) {
     if (!onScreen(e)) continue;
-    FX.bolt(P.x, P.y, e.x, e.y, '#fff');
     damageEnemy(e, e.isBoss ? Math.min(e.maxHp * .1, base * 2) : base * 3 * Diff.hp(), true);
   }
   G.ultBurst = false;
