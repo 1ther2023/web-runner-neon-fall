@@ -27,7 +27,7 @@
         <div>单手挂住会<b>摆荡</b>，双手挂住会<b>悬停</b>；画面自动向前卷动，<b class="c-red">掉出屏幕底部即坠亡</b></div>
         <div>攻击全自动 · 收集<b style="color:#7fd8ff">能量</b>升级学技能（5 槽 · Lv10 MAX）</div>
         <div>击败<b>精英</b>掉落装备（6 槽） · 用<b>金币</b>强化装备（Lv4 MAX）</div>
-        <div>擦身 / 击杀积攒能量，满后按 <kbd>空格</kbd> 释放大招 · <kbd>P</kbd> 暂停 <kbd>M</kbd> 静音</div>
+        <div>擦身 / 击杀积攒能量，满后按 <kbd>空格</kbd> 释放大招 · <kbd>P</kbd> 暂停（切窗口自动暂停） <kbd>M</kbd> 静音</div>
       </div>
       <button id="btnStart" class="btn">▶ 出 发</button>
       <div class="best" id="bestLine"></div>
@@ -50,7 +50,9 @@
     <!-- 暂停 -->
     <div id="pause" class="screen">
       <div class="over-title">暂停</div>
-      <div class="pick-hint">按 P / ESC 继续</div>
+      <div class="pick-hint">按 P / ESC 继续 · 按 H 收起面板（方便截图）</div>
+      <div class="pause-btns"><button id="btnResume" class="btn">▶ 继 续</button><button id="btnPauseMini" class="btn">▭ 收起面板</button></div>
+      <div id="pauseMini" title="点击展开">⏸ 暂停中 · H 展开</div>
     </div>
     <div id="hud"><div class="bar" id="skSlots"></div><div class="bar" id="eqSlots"></div></div>
     <div id="banner"></div>
@@ -75,5 +77,6 @@
 <script src="js/gfx/sprites.js"></script>
 <script src="js/gfx/anim.js"></script>
 <script src="js/gfx/neon.js"></script>
+<script src="js/gfx/ult.js"></script>
 </body>
 </html>
