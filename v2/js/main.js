@@ -140,13 +140,31 @@ $('skipBtn').addEventListener('click', () => UI.choose(-1));
 $('btnRetry').addEventListener('click', () => { Sfx.init(); UI.hide('over'); newGame(); });
 $('bestLine').textContent = localStorage.getItem('gouying_best') ? '最高分 ' + localStorage.getItem('gouying_best') : '';
 
+// ============ 暂停：切窗口自动暂停 / H 收起面板方便截图 ============
+function pauseGame() {
+  if (G.state !== 'play') return;
+  G.state = 'pause'; $('pause').classList.remove('mini'); UI.show('pause');
+  Input.L = Input.R = false; if (Sfx.ctx && Sfx.ctx.state === 'running') Sfx.ctx.suspend();
+}
+function resumeGame() {
+  if (G.state !== 'pause') return;
+  UI.hide('pause'); $('pause').classList.remove('mini'); if (Sfx.ctx) Sfx.ctx.resume();
+  G.state = 'resume';   // 等玩家重新按住鼠标再继续，避免一恢复就坠落
+}
+function togglePauseMini() { $('pause').classList.toggle('mini'); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(); });
+window.addEventListener('blur', pauseGame);
+$('btnPauseMini').addEventListener('click', e => { e.stopPropagation(); togglePauseMini(); });
+$('btnResume').addEventListener('click', e => { e.stopPropagation(); resumeGame(); });
+$('pauseMini').addEventListener('click', e => { e.stopPropagation(); togglePauseMini(); });
+
 // ============ 更新 ============
 function update(rdt) {
   if (keyHit('KeyM')) { Sfx.muted = !Sfx.muted; }
   if (G.state === 'pick') { for (let i = 0; i < 3; i++) if (keyHit('Digit' + (i + 1))) UI.choose(i); if (UI.mode === 'upgrade' && keyHit('KeyX')) UI.choose(-1); return; }
-  if (G.state === 'play' && (keyHit('KeyP') || keyHit('Escape'))) { G.state = 'pause'; UI.show('pause'); return; }
+  if (G.state === 'play' && (keyHit('KeyP') || keyHit('Escape'))) { pauseGame(); return; }
   if (G.state === 'resume') { G.time += rdt; if (handDown(0) || handDown(1)) { G.state = 'play'; slowMo(.4, .6); } return; }
-  if (G.state === 'pause') { if (keyHit('KeyP') || keyHit('Escape')) { G.state = 'play'; UI.hide('pause'); } return; }
+  if (G.state === 'pause') { if (keyHit('KeyH')) togglePauseMini(); else if (keyHit('KeyP') || keyHit('Escape')) resumeGame(); return; }
   if (G.state === 'title') { const dx = 30 * rdt; G.cam.x += dx; G.camDX = G.carryX = G.arDX = dx; G.arDY = 0; G.tideX = G.cam.x; G.time += rdt; World.update(G.cam.x); return; }
 
   if (G.hitstop > 0) { G.hitstop -= rdt; return; }
